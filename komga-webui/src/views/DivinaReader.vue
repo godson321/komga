@@ -48,6 +48,12 @@
           </v-btn>
           <v-btn
             icon
+            @click="toggleLight()"
+          >
+            <v-icon>{{ lightIcon }}</v-icon>
+          </v-btn>
+          <v-btn
+            icon
             @click="showSettings = !showSettings"
           >
             <v-icon>mdi-cog</v-icon>
@@ -144,6 +150,7 @@
         :scale="scale"
         :animations="animations"
         :swipe="swipe"
+        :preload-pages="preloadPages"
         @menu="toggleToolbars()"
         @jump-previous="jumpToPrevious()"
         @jump-next="jumpToNext()"
@@ -157,9 +164,8 @@
       :pagesCount="pagesCount"
     ></thumbnail-explorer-dialog>
 
-    <v-bottom-sheet
+    <v-dialog
       v-model="showSettings"
-      :close-on-content-click="false"
       max-width="500"
       @keydown.esc.stop=""
       scrollable
@@ -248,13 +254,21 @@
                   :label="$t('bookreader.settings.page_layout')"
                 />
               </v-list-item>
+
+              <v-list-item>
+                <settings-select
+                  :items="preloadPageOptions"
+                  v-model="preloadPages"
+                  :label="$t('bookreader.settings.preload_pages')"
+                />
+              </v-list-item>
             </template>
 
 
           </v-list>
         </v-card-text>
       </v-card>
-    </v-bottom-sheet>
+    </v-dialog>
     <v-snackbar
       v-model="jumpToPreviousBook"
       :timeout="jumpConfirmationDelay"
@@ -396,8 +410,9 @@ export default Vue.extend({
         continuousScale: ContinuousScaleType.WIDTH,
         sidePadding: 0,
         pageMargin: 0,
-        readingDirection: ReadingDirection.LEFT_TO_RIGHT,
+      readingDirection: ReadingDirection.LEFT_TO_RIGHT,
         backgroundColor: 'black',
+        preloadPages: 2,
       },
       shortcuts: {} as any,
       notification: {
@@ -427,6 +442,10 @@ export default Vue.extend({
       })),
       marginValues: Object.values(MarginValues).map(x => ({
         text: x === 0 ? this.$i18n.t('bookreader.settings.side_padding_none').toString() : `${x}px`,
+        value: x,
+      })),
+      preloadPageOptions: [1, 2, 3, 5, 10].map(x => ({
+        text: `${x}`,
         value: x,
       })),
       backgroundColors: [
@@ -466,6 +485,7 @@ export default Vue.extend({
     this.sidePadding = this.$store.state.persistedState.webreader.continuous.padding
     this.pageMargin = this.$store.state.persistedState.webreader.continuous.margin
     this.backgroundColor = this.$store.state.persistedState.webreader.background
+    this.preloadPages = this.$store.state.persistedState.webreader.paged.preloadPages
 
     this.setup(this.bookId, Number(this.$route.query.page))
   },
@@ -556,6 +576,16 @@ export default Vue.extend({
     currentPage(): PageDtoWithUrl {
       return this.pages[this.page - 1]
     },
+    lightIcon(): string {
+      switch (this.backgroundColor) {
+        case 'white':
+          return 'mdi-lightbulb-on'
+        case '#212121':
+          return 'mdi-lightbulb-on-10'
+        default:
+          return 'mdi-lightbulb-off-outline'
+      }
+    },
 
     animations: {
       get: function (): boolean {
@@ -621,6 +651,17 @@ export default Vue.extend({
         }
       },
     },
+    preloadPages: {
+      get: function (): number {
+        return this.settings.preloadPages
+      },
+      set: function (val: number): void {
+        if ([1, 2, 3, 5, 10].includes(val)) {
+          this.settings.preloadPages = val
+          this.$store.commit('setWebreaderPreloadPages', val)
+        }
+      },
+    },
     readingDirection: {
       get: function (): ReadingDirection {
         return this.settings.readingDirection
@@ -665,6 +706,11 @@ export default Vue.extend({
     },
   },
   methods: {
+    toggleLight() {
+      const cycle = ['black', '#212121', 'white'] as string[]
+      const i = cycle.indexOf(this.backgroundColor)
+      this.backgroundColor = cycle[(i + 1) % cycle.length]
+    },
     enterFullscreen() {
       if (screenfull.isEnabled) screenfull.request(document.documentElement, {navigationUI: 'hide'})
     },

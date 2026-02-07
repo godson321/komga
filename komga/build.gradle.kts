@@ -165,6 +165,14 @@ tasks {
     enabled = true
   }
 
+  withType<org.springframework.boot.gradle.tasks.run.BootRun> {
+    jvmArgs(
+      "-Dfile.encoding=UTF-8",
+      "-Dsun.stdout.encoding=UTF-8",
+      "-Dsun.stderr.encoding=UTF-8",
+    )
+  }
+
   register<Exec>("npmInstall") {
     group = "web"
     workingDir(webui)

@@ -9,7 +9,11 @@ komga:
     - https://komga.org
   oauth2-account-creation: false
   config-dir: ${rootDir}/config-dir
+
 logging:
+  charset:
+    console: UTF-8
+    file: UTF-8
   level:
     org.apache.activemq.audit.message: WARN
     org.gotson.komga: DEBUG
@@ -27,11 +31,34 @@ logging:
   logback:
     rollingpolicy:
       max-history: 1
+
 springdoc:
   cache:
     disabled: true
 
 server:
   port: 8080
-#  servlet:
-#    context-path: /komga
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  tomcat:
+    uri-encoding: UTF-8
+  banner:
+    charset: UTF-8
+
+spring:
+  banner:
+    charset: UTF-8
+  file:
+    charset: UTF-8
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+  sqlite:
+    params:
+      socket_timeout: 30
+  codec:
+    max-in-memory-size: 100MB

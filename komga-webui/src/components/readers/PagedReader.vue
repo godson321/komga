@@ -90,6 +90,8 @@ export default Vue.extend({
       logger: 'PagedReader',
       carouselPage: 0,
       spreads: [] as PageDtoWithUrl[][],
+      wheelThrottled: false,
+      wheelDeltaAccumulator: 0,
     }
   },
   props: {
@@ -120,6 +122,10 @@ export default Vue.extend({
     scale: {
       type: String as () => ScaleType,
       required: true,
+    },
+    preloadPages: {
+      type: Number,
+      default: 2,
     },
   },
   watch: {
@@ -156,9 +162,11 @@ export default Vue.extend({
   },
   created() {
     window.addEventListener('keydown', this.keyPressed)
+    window.addEventListener('wheel', this.wheelTurn, {passive: false})
   },
   destroyed() {
     window.removeEventListener('keydown', this.keyPressed)
+    window.removeEventListener('wheel', this.wheelTurn)
   },
   computed: {
     shortcuts(): any {
@@ -202,6 +210,40 @@ export default Vue.extend({
     keyPressed(e: KeyboardEvent) {
       this.shortcuts[e.key]?.execute(this)
     },
+    wheelTurn(e: WheelEvent) {
+      // If content is scrollable (e.g. fit-width mode), allow normal scroll
+      // and only turn page when scrolled to the top/bottom edge
+      const el = document.documentElement
+      const isScrollable = el.scrollHeight > el.clientHeight + 1
+      if (isScrollable) {
+        const atTop = el.scrollTop <= 0
+        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+        if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atBottom)) {
+          return // allow normal scroll
+        }
+      }
+
+      e.preventDefault()
+      if (this.wheelThrottled) return
+
+      // Accumulate delta to handle trackpad small increments
+      this.wheelDeltaAccumulator += e.deltaY
+      const threshold = 50
+      if (Math.abs(this.wheelDeltaAccumulator) < threshold) return
+
+      const direction = this.wheelDeltaAccumulator > 0 ? 1 : -1
+      this.wheelDeltaAccumulator = 0
+      this.wheelThrottled = true
+      setTimeout(() => { this.wheelThrottled = false }, 400)
+
+      if (this.vertical) {
+        if (direction > 0) this.verticalNext()
+        else this.verticalPrev()
+      } else {
+        if (direction > 0) this.next()
+        else this.prev()
+      }
+    },
     imgClass(spread: PageDtoWithUrl[]): string {
       const double = spread.length > 1
       switch (this.scale) {
@@ -218,7 +260,7 @@ export default Vue.extend({
       }
     },
     eagerLoad(spreadIndex: number): boolean {
-      return Math.abs(this.carouselPage - spreadIndex) <= 2
+      return Math.abs(this.carouselPage - spreadIndex) <= this.preloadPages
     },
     preRender(spreadIndex: number): boolean {
       return Math.abs(this.carouselPage - spreadIndex) > (this.animations ? 1 : 0)

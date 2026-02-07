@@ -286,7 +286,11 @@ export default Vue.extend({
       return errors
     },
     async getClaimStatus() {
-      this.unclaimed = !(await this.$komgaClaim.getClaimStatus()).isClaimed
+      try {
+        this.unclaimed = !(await this.$komgaClaim.getClaimStatus()).isClaimed
+      } catch (e) {
+        this.showSnack(e.message)
+      }
     },
     async performLogin() {
       if (this.isUserValid()) {
