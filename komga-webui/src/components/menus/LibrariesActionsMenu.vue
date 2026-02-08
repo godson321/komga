@@ -10,12 +10,22 @@
         <v-list-item @click="reorder">
           <v-list-item-title>{{ $t('common.reorder') }}</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="scan(false)" v-if="isAdmin">
-          <v-list-item-title>{{ $t('server.server_management.button_scan_libraries') }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scan(true)" class="list-warning" v-if="isAdmin">
-          <v-list-item-title>{{ $t('server.server_management.button_scan_libraries_deep') }}</v-list-item-title>
-        </v-list-item>
+        <v-tooltip right :disabled="!$te('server.server_management.button_scan_libraries_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="scan(false)" v-on="tooltip">
+              <v-list-item-title>{{ $t('server.server_management.button_scan_libraries') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('server.server_management.button_scan_libraries_tooltip') }}</span>
+        </v-tooltip>
+        <v-tooltip right :disabled="!$te('server.server_management.button_scan_libraries_deep_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="scan(true)" class="list-warning" v-on="tooltip">
+              <v-list-item-title>{{ $t('server.server_management.button_scan_libraries_deep') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('server.server_management.button_scan_libraries_deep_tooltip') }}</span>
+        </v-tooltip>
         <v-list-item @click="confirmEmptyTrash = true" v-if="isAdmin">
           <v-list-item-title>{{ $t('server.server_management.button_empty_trash') }}</v-list-item-title>
         </v-list-item>

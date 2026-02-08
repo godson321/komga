@@ -31,17 +31,19 @@ class TasksDao(
   TasksRepository {
   private val t = Tables.TASK
 
+  private val t2 = Tables.TASK.`as`("t2")
+
   private val tasksAvailableCondition =
     t.OWNER.isNull
       .and(
-        t.GROUP_ID
-          .notIn(
-            DSL
-              .select(t.GROUP_ID)
-              .from(t)
-              .where(t.OWNER.isNotNull)
-              .and(t.GROUP_ID.isNotNull),
-          ).or(t.GROUP_ID.isNull),
+        DSL.notExists(
+          DSL
+            .selectOne()
+            .from(t2)
+            .where(t2.OWNER.isNotNull)
+            .and(t2.GROUP_ID.isNotNull)
+            .and(t2.GROUP_ID.eq(t.GROUP_ID)),
+        ).or(t.GROUP_ID.isNull),
       )
 
   override fun hasAvailable(): Boolean =

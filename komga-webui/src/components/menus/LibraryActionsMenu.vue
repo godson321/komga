@@ -7,18 +7,38 @@
         </v-btn>
       </template>
       <v-list dense>
-        <v-list-item @click="scan(false)" v-if="isAdmin">
-          <v-list-item-title>{{ $t('menu.scan_library_files') }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="scan(true)" class="list-warning" v-if="isAdmin">
-          <v-list-item-title>{{ $t('menu.scan_library_files_deep') }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="confirmAnalyzeModal = true" v-if="isAdmin">
-          <v-list-item-title>{{ $t('menu.analyze') }}</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click="confirmRefreshMetadataModal = true" v-if="isAdmin">
-          <v-list-item-title>{{ $t('menu.refresh_metadata') }}</v-list-item-title>
-        </v-list-item>
+        <v-tooltip right :disabled="!$te('menu.scan_library_files_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="scan(false)" v-on="tooltip">
+              <v-list-item-title>{{ $t('menu.scan_library_files') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('menu.scan_library_files_tooltip') }}</span>
+        </v-tooltip>
+        <v-tooltip right :disabled="!$te('menu.scan_library_files_deep_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="scan(true)" class="list-warning" v-on="tooltip">
+              <v-list-item-title>{{ $t('menu.scan_library_files_deep') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('menu.scan_library_files_deep_tooltip') }}</span>
+        </v-tooltip>
+        <v-tooltip right :disabled="!$te('menu.analyze_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="confirmAnalyzeModal = true" v-on="tooltip">
+              <v-list-item-title>{{ $t('menu.analyze') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('menu.analyze_tooltip') }}</span>
+        </v-tooltip>
+        <v-tooltip right :disabled="!$te('menu.refresh_metadata_tooltip')" v-if="isAdmin">
+          <template v-slot:activator="{ on: tooltip }">
+            <v-list-item @click="confirmRefreshMetadataModal = true" v-on="tooltip">
+              <v-list-item-title>{{ $t('menu.refresh_metadata') }}</v-list-item-title>
+            </v-list-item>
+          </template>
+          <span>{{ $t('menu.refresh_metadata_tooltip') }}</span>
+        </v-tooltip>
         <v-list-item @click="confirmEmptyTrash = true" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.empty_trash') }}</v-list-item-title>
         </v-list-item>

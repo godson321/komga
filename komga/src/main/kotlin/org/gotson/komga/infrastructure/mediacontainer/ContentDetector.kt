@@ -3,6 +3,7 @@ package org.gotson.komga.infrastructure.mediacontainer
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.io.TikaInputStream
 import org.apache.tika.metadata.Metadata
+import org.apache.tika.metadata.TikaCoreProperties
 import org.springframework.stereotype.Service
 import java.io.InputStream
 import java.nio.file.Path
@@ -29,6 +30,14 @@ class ContentDetector(
    * The stream will not be closed.
    */
   fun detectMediaType(stream: InputStream): String = tika.detector.detect(stream, Metadata()).toString()
+
+  /**
+   * Detects the media type based on file name/extension only, without reading content.
+   */
+  fun detectMediaTypeByName(name: String): String {
+    val metadata = Metadata().also { it[TikaCoreProperties.RESOURCE_NAME_KEY] = name }
+    return tika.detector.detect(null, metadata).toString()
+  }
 
   fun isImage(mediaType: String): Boolean = mediaType.startsWith("image/")
 

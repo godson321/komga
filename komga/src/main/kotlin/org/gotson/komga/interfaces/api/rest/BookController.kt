@@ -438,16 +438,11 @@ class BookController(
     bookRepository.findByIdOrNull(bookId)?.let { book ->
       contentRestrictionChecker.checkContentRestriction(principal.user, book)
 
-      val media = mediaRepository.findById(book.id)
+      val media = bookLifecycle.ensureAnalyzed(book)
       when (media.status) {
-        Media.Status.UNKNOWN -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Book has not been analyzed yet")
-        Media.Status.OUTDATED -> throw ResponseStatusException(
-          HttpStatus.NOT_FOUND,
-          "Book is outdated and must be re-analyzed",
-        )
-
         Media.Status.ERROR -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Book analysis failed")
         Media.Status.UNSUPPORTED -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Book format is not supported")
+        Media.Status.UNKNOWN, Media.Status.OUTDATED -> throw ResponseStatusException(HttpStatus.NOT_FOUND, "Book analysis failed")
         Media.Status.READY -> {
           val pages = if (media.profile == MediaProfile.PDF) bookAnalyzer.getPdfPagesDynamic(media) else media.pages
           pages.mapIndexed { index, bookPage ->

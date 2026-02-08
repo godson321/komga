@@ -51,19 +51,26 @@ class Rar5Extractor(
     Archive(path, setOf(ReadSupportCompression.NONE), setOf(ReadSupportFilter.NONE), setOf(ReadSupportFormat.RAR5)).use { rar ->
       generateSequence { rar.nextEntry }
         .map { entry ->
-          try {
-            val buffer = rar.inputStream.use { it.readBytes() }
-            val mediaType = buffer.inputStream().use { contentDetector.detectMediaType(it) }
-            val dimension =
-              if (analyzeDimensions && contentDetector.isImage(mediaType))
-                buffer.inputStream().use { imageAnalyzer.getDimension(it) }
-              else
-                null
-            val fileSize = entry.size
-            MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = dimension, fileSize = fileSize)
-          } catch (e: Exception) {
-            logger.warn(e) { "Could not analyze entry: ${entry.name}" }
-            MediaContainerEntry(name = entry.name, comment = e.message)
+          if (analyzeDimensions) {
+            // Full analysis: decompress content to detect MIME and get image dimensions
+            try {
+              val buffer = rar.inputStream.use { it.readBytes() }
+              val mediaType = buffer.inputStream().use { contentDetector.detectMediaType(it) }
+              val dimension =
+                if (contentDetector.isImage(mediaType))
+                  buffer.inputStream().use { imageAnalyzer.getDimension(it) }
+                else
+                  null
+              MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = dimension, fileSize = entry.size)
+            } catch (e: Exception) {
+              logger.warn(e) { "Could not analyze entry: ${entry.name}" }
+              MediaContainerEntry(name = entry.name, comment = e.message)
+            }
+          } else {
+            // Fast path: only read entry headers, detect MIME by file extension.
+            // libarchive automatically skips compressed data when not read.
+            val mediaType = contentDetector.detectMediaTypeByName(entry.name)
+            MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = null, fileSize = entry.size)
           }
         }.sortedWith(compareBy(natSortComparator) { it.name })
         .toList()

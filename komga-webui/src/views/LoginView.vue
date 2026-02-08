@@ -222,6 +222,7 @@ export default Vue.extend({
       return [
         {text: this.$i18n.t(Theme.LIGHT), value: Theme.LIGHT},
         {text: this.$i18n.t(Theme.DARK), value: Theme.DARK},
+        {text: this.$i18n.t(Theme.OCEAN), value: Theme.OCEAN},
         {text: this.$i18n.t(Theme.SYSTEM), value: Theme.SYSTEM},
       ]
     },
@@ -231,6 +232,8 @@ export default Vue.extend({
           return 'mdi-brightness-7'
         case Theme.DARK:
           return 'mdi-brightness-3'
+        case Theme.OCEAN:
+          return 'mdi-waves'
         case Theme.SYSTEM:
           return 'mdi-brightness-auto'
       }

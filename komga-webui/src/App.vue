@@ -6,6 +6,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {Theme} from '@/types/themes'
+import {originalDarkColors, oceanColors} from '@/plugins/vuetify'
 import {LIBRARY_ADDED, LIBRARY_CHANGED, LIBRARY_DELETED, SESSION_EXPIRED} from '@/types/events'
 import {LibrarySseDto, SessionExpiredDto} from '@/types/komga-sse'
 
@@ -54,17 +55,34 @@ export default Vue.extend({
         this.changeTheme(this.$store.state.persistedState.theme)
       }
     },
+    applyDarkColors(colors: Record<string, string>) {
+      Object.entries(colors).forEach(([key, value]) => {
+        this.$vuetify.theme.themes.dark[key] = value
+      })
+    },
     changeTheme(theme: Theme) {
+      // Remove ocean class first
+      document.documentElement.classList.remove('theme-ocean')
+
       switch (theme) {
+        case Theme.OCEAN:
+          this.$vuetify.theme.dark = true
+          this.applyDarkColors(oceanColors)
+          document.documentElement.classList.add('theme-ocean')
+          break
+
         case Theme.DARK:
           this.$vuetify.theme.dark = true
+          this.applyDarkColors(originalDarkColors)
           break
 
         case Theme.SYSTEM:
+          this.applyDarkColors(originalDarkColors)
           this.$vuetify.theme.dark = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
           break
 
         default:
+          this.applyDarkColors(originalDarkColors)
           this.$vuetify.theme.dark = false
           break
       }

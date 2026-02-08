@@ -34,15 +34,22 @@ class RarExtractor(
         .filter { !it.isDirectory }
         .map { entry ->
           try {
-            val buffer = rar.getInputStream(entry).use { it.readBytes() }
-            val mediaType = buffer.inputStream().use { contentDetector.detectMediaType(it) }
-            val dimension =
-              if (analyzeDimensions && contentDetector.isImage(mediaType))
-                buffer.inputStream().use { imageAnalyzer.getDimension(it) }
-              else
-                null
-            val fileSize = entry.fullUnpackSize
-            MediaContainerEntry(name = entry.fileName, mediaType = mediaType, dimension = dimension, fileSize = fileSize)
+            if (analyzeDimensions) {
+              val buffer = rar.getInputStream(entry).use { it.readBytes() }
+              val mediaType = buffer.inputStream().use { contentDetector.detectMediaType(it) }
+              val dimension =
+                if (contentDetector.isImage(mediaType))
+                  buffer.inputStream().use { imageAnalyzer.getDimension(it) }
+                else
+                  null
+              val fileSize = entry.fullUnpackSize
+              MediaContainerEntry(name = entry.fileName, mediaType = mediaType, dimension = dimension, fileSize = fileSize)
+            } else {
+              // Fast path: detect MIME by file extension only, avoid decompressing entry content
+              val mediaType = contentDetector.detectMediaTypeByName(entry.fileName)
+              val fileSize = entry.fullUnpackSize
+              MediaContainerEntry(name = entry.fileName, mediaType = mediaType, dimension = null, fileSize = fileSize)
+            }
           } catch (e: Exception) {
             logger.warn(e) { "Could not analyze entry: ${entry.fileName}" }
             MediaContainerEntry(name = entry.fileName, comment = e.message)

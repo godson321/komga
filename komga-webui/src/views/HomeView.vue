@@ -30,24 +30,6 @@
           </v-list-item-title>
         </v-list-item-content>
 
-        <v-tooltip left>
-          <template v-slot:activator="{ on }">
-            <v-progress-linear
-              :active="taskCount > 0"
-              indeterminate
-              absolute
-              bottom
-              height="5"
-              color="secondary"
-              v-on="on"
-            />
-          </template>
-          <div class="mb-2">{{ $tc('common.pending_tasks', taskCount) }}</div>
-          <div v-for="taskType in Object.keys(taskCountByType)"
-               :key="taskType"
-          >{{ taskType }}: {{ taskCountByType[taskType] }}
-          </div>
-        </v-tooltip>
       </v-list-item>
 
       <v-divider/>
@@ -346,6 +328,26 @@
       </template>
 
       <template v-slot:append>
+        <v-card v-if="isAdmin && taskCount > 0"
+                flat
+                class="task-panel mx-3 mb-2 pa-2 rounded-lg"
+        >
+          <v-progress-linear
+            indeterminate
+            height="3"
+            color="secondary"
+            class="mb-2 rounded-pill"
+          />
+          <div class="d-flex align-center mb-1">
+            <v-icon small color="secondary" class="mr-1">mdi-cog-sync</v-icon>
+            <span class="text-caption font-weight-medium">{{ $tc('common.pending_tasks', taskCount) }}</span>
+          </div>
+          <div v-for="taskType in Object.keys(taskCountByType)"
+               :key="taskType"
+               class="text-caption task-detail pl-5"
+          >{{ taskTypeLabel(taskType) }}: {{ taskCountByType[taskType] }}
+          </div>
+        </v-card>
         <div v-if="isAdmin && !$_.isEmpty($store.state.actuatorInfo)"
              class="pa-2 pb-6 text-caption"
         >
@@ -454,6 +456,7 @@ export default Vue.extend({
       return [
         {text: this.$i18n.t(Theme.LIGHT), value: Theme.LIGHT},
         {text: this.$i18n.t(Theme.DARK), value: Theme.DARK},
+        {text: this.$i18n.t(Theme.OCEAN), value: Theme.OCEAN},
         {text: this.$i18n.t(Theme.SYSTEM), value: Theme.SYSTEM},
       ]
     },
@@ -463,6 +466,8 @@ export default Vue.extend({
           return 'mdi-brightness-7'
         case Theme.DARK:
           return 'mdi-brightness-3'
+        case Theme.OCEAN:
+          return 'mdi-waves'
         case Theme.SYSTEM:
           return 'mdi-brightness-auto'
       }
@@ -491,6 +496,10 @@ export default Vue.extend({
     },
   },
   methods: {
+    taskTypeLabel(taskType: string): string {
+      const key = `common.task_type.${taskType}`
+      return this.$te(key) ? this.$t(key) as string : taskType
+    },
     checkRoute(to) {
       this.expandSettings = to.path.includes('/settings/')
       this.expandMediaManagement = to.path.includes('/media-management/')
@@ -513,3 +522,25 @@ export default Vue.extend({
   },
 })
 </script>
+
+<style scoped>
+.task-panel {
+  background: var(--v-secondary-lighten5, rgba(var(--v-theme-secondary), 0.06)) !important;
+  border: 1px solid rgba(128, 128, 128, 0.15) !important;
+}
+
+.theme--dark .task-panel {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.theme--light .task-panel {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.task-detail {
+  opacity: 0.7;
+  line-height: 1.6;
+}
+</style>

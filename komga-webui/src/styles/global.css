@@ -13,3 +13,39 @@ html {
 .link-underline:hover {
     text-decoration: underline;
 }
+
+/* ===== Ocean "星空蓝" theme background overrides ===== */
+.theme-ocean .theme--dark.v-application {
+    background: #0D1B2A !important;
+}
+
+.theme-ocean .v-navigation-drawer.theme--dark {
+    background: #112240 !important;
+}
+
+.theme-ocean .v-app-bar.theme--dark {
+    background: #112240 !important;
+}
+
+.theme-ocean .v-card.theme--dark,
+.theme-ocean .v-sheet.theme--dark,
+.theme-ocean .v-list.theme--dark {
+    background: #162B45 !important;
+}
+
+.theme-ocean .v-menu__content .v-list.theme--dark {
+    background: #1B3352 !important;
+}
+
+.theme-ocean .v-dialog .v-card.theme--dark {
+    background: #162B45 !important;
+}
+
+.theme-ocean .v-data-table.theme--dark {
+    background: #162B45 !important;
+}
+
+.theme-ocean .v-toolbar.theme--dark {
+    background: #112240 !important;
+}
+

@@ -75,6 +75,21 @@ class BookLifecycle(
 ) {
   private val resizeTargetFormat = ImageType.JPEG
 
+  /**
+   * Ensures the book's media is analyzed. If the media status is UNKNOWN or OUTDATED,
+   * performs on-demand analysis synchronously and returns the updated media.
+   * This allows reading a book without waiting for background analysis.
+   */
+  fun ensureAnalyzed(book: Book): Media {
+    val media = mediaRepository.findById(book.id)
+    if (media.status == Media.Status.UNKNOWN || media.status == Media.Status.OUTDATED) {
+      logger.info { "On-demand analysis for book: $book" }
+      analyzeAndPersist(book)
+      return mediaRepository.findById(book.id)
+    }
+    return media
+  }
+
   fun analyzeAndPersist(book: Book): Set<BookAction> {
     logger.info { "Analyze and persist book: $book" }
     val media = bookAnalyzer.analyze(book, libraryRepository.findById(book.libraryId).analyzeDimensions)
@@ -314,7 +329,7 @@ class BookLifecycle(
     convertTo: ImageType? = null,
     resizeTo: Int? = null,
   ): TypedBytes {
-    val media = mediaRepository.findById(book.id)
+    val media = ensureAnalyzed(book)
     val pageContent = bookAnalyzer.getPageContent(BookWithMedia(book, media), number)
     val pageMediaType =
       if (media.profile == MediaProfile.PDF)

@@ -15,18 +15,6 @@
       />
     </div>
 
-    <!--  clickable zone: top  -->
-    <div @click="prev()"
-         class="top-quarter"
-         style="z-index: 1;"
-    />
-
-    <!--  clickable zone: bottom  -->
-    <div @click="next()"
-         class="bottom-quarter"
-         style="z-index: 1;"
-    />
-
     <!--  clickable zone: menu  -->
     <div @click="centerClick()"
          class="center-vertical"
@@ -116,10 +104,6 @@ export default Vue.extend({
     canNext(): boolean {
       return this.offsetTop + this.$vuetify.breakpoint.height < this.totalHeight
     },
-    goToOptions(): object | undefined {
-      if (this.animations) return undefined
-      return {duration: 0}
-    },
     totalSidePadding(): number {
       return this.sidePadding * 2
     },
@@ -178,40 +162,10 @@ export default Vue.extend({
     centerClick() {
       this.$emit('menu')
     },
-    prev() {
-      if (this.canPrev) {
-        const step = this.$vuetify.breakpoint.height * 0.95
-        this.$vuetify.goTo(this.offsetTop - step, this.goToOptions)
-      } else {
-        this.$emit('jump-previous')
-      }
-    },
-    next() {
-      if (this.canNext) {
-        const step = this.$vuetify.breakpoint.height * 0.95
-        this.$vuetify.goTo(this.offsetTop + step, this.goToOptions)
-      } else {
-        this.$emit('jump-next')
-      }
-    },
   },
 })
 </script>
 <style scoped>
-.top-quarter {
-  top: 0;
-  height: 25vh;
-  width: 100%;
-  position: fixed;
-}
-
-.bottom-quarter {
-  top: 75vh;
-  height: 25vh;
-  width: 100%;
-  position: fixed;
-}
-
 .center-vertical {
   top: 25vh;
   height: 50vh;

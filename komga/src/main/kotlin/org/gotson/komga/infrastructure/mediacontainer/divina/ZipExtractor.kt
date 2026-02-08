@@ -34,15 +34,21 @@ class ZipExtractor(
         .filter { !it.isDirectory }
         .map { entry ->
           try {
-            zip.getInputStream(entry).buffered().use { stream ->
-              val mediaType = contentDetector.detectMediaType(stream)
-              val dimension =
-                if (analyzeDimensions && contentDetector.isImage(mediaType))
-                  imageAnalyzer.getDimension(stream)
-                else
-                  null
-              val fileSize = if (entry.size == ArchiveEntry.SIZE_UNKNOWN) null else entry.size
-              MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = dimension, fileSize = fileSize)
+            val fileSize = if (entry.size == ArchiveEntry.SIZE_UNKNOWN) null else entry.size
+            if (analyzeDimensions) {
+              zip.getInputStream(entry).buffered().use { stream ->
+                val mediaType = contentDetector.detectMediaType(stream)
+                val dimension =
+                  if (contentDetector.isImage(mediaType))
+                    imageAnalyzer.getDimension(stream)
+                  else
+                    null
+                MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = dimension, fileSize = fileSize)
+              }
+            } else {
+              // Fast path: detect MIME by file extension only, avoid decompressing entry content
+              val mediaType = contentDetector.detectMediaTypeByName(entry.name)
+              MediaContainerEntry(name = entry.name, mediaType = mediaType, dimension = null, fileSize = fileSize)
             }
           } catch (e: Exception) {
             logger.warn(e) { "Could not analyze entry: ${entry.name}" }

@@ -14,6 +14,28 @@ Vue.use(Vuetify, {
   },
 })
 
+// Original dark theme colors - used to restore when switching away from Ocean
+export const originalDarkColors: Record<string, string> = {
+  base: colors.shades.black,
+  primary: '#78baec',
+  secondary: '#fec000',
+  accent: '#ff0335',
+  'contrast-1': colors.grey.darken4,
+  'contrast-light-2': colors.grey.lighten2,
+  'diff': colors.green.darken4,
+}
+
+// Ocean
+export const oceanColors: Record<string, string> = {
+  base: '#0D1B2A',
+  primary: '#64B5F6',
+  secondary: '#FFB74D',
+  accent: '#EF5350',
+  'contrast-1': '#1B3352',
+  'contrast-light-2': '#90A4AE',
+  'diff': '#1B4332',
+}
+
 export default new Vuetify({
   icons: {
     iconfont: 'mdi',
@@ -43,13 +65,7 @@ export default new Vuetify({
         'diff': colors.green.lighten4,
       },
       dark: {
-        base: colors.shades.black,
-        primary: '#78baec',
-        secondary: '#fec000',
-        accent: '#ff0335',
-        'contrast-1': colors.grey.darken4,
-        'contrast-light-2': colors.grey.lighten2,
-        'diff': colors.green.darken4,
+        ...originalDarkColors,
       },
     },
   },

@@ -911,7 +911,10 @@
     "mark_unread": "Mark as unread",
     "pin": "Pin",
     "refresh_metadata": "Refresh metadata",
+    "analyze_tooltip": "Parses book file structure (format, pages, dimensions, etc.). On success, generates thumbnails and triggers metadata refresh",
+    "refresh_metadata_tooltip": "Extracts metadata (title, authors, summary, etc.) from embedded info (ComicInfo.xml, EPUB OPF) and refreshes local artwork",
     "scan_library_files": "Scan library files",
+    "scan_library_files_tooltip": "Only scans series whose directory modified time has changed. Auto-analyzes unfinished books after scan, use this to resume after cancelling tasks",
     "scan_library_files_deep": "Scan library files (deep)",
     "select_all": "Select all",
     "unpin": "Unpin"
@@ -972,6 +975,7 @@
       "button_cancel_all_tasks": "Cancel all tasks",
       "button_empty_trash": "Empty trash for all libraries",
       "button_scan_libraries": "Scan all libraries",
+      "button_scan_libraries_tooltip": "Only scans series whose directory modified time has changed. Auto-analyzes unfinished books after scan, use this to resume after cancelling tasks",
       "button_scan_libraries_deep": "Scan all libraries (deep)",
       "button_shutdown": "Shut down",
       "download_log": "Download log file",
@@ -1031,6 +1035,7 @@
   "theme": {
     "dark": "Dark",
     "light": "Light",
+    "ocean": "Starfield",
     "system": "System"
   },
   "thumbnail_card": {
