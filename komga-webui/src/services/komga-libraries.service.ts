@@ -119,4 +119,26 @@ export default class KomgaLibrariesService {
       throw new Error(msg)
     }
   }
+
+  async migratePath(library: LibraryDto, oldPathPrefix: string, newPathPrefix: string): Promise<PathMigrationResultDto> {
+    try {
+      return (await this.http.post(`${API_LIBRARIES}/${library.id}/migrate-path`, {
+        oldPathPrefix,
+        newPathPrefix,
+      })).data
+    } catch (e) {
+      let msg = `An error occurred while trying to migrate paths for library '${library.name}'`
+      if (e.response.data.message) {
+        msg += `: ${e.response.data.message}`
+      }
+      throw new Error(msg)
+    }
+  }
+}
+
+export interface PathMigrationResultDto {
+  libraryUpdated: number
+  seriesUpdated: number
+  booksUpdated: number
+  sidecarsUpdated: number
 }

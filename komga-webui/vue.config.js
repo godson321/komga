@@ -20,6 +20,16 @@ module.exports = {
     },
   },
 
+  css: {
+    loaderOptions: {
+      sass: {
+        sassOptions: {
+          silenceDeprecations: ['slash-div'],
+        },
+      },
+    },
+  },
+
   // custom rule for readium and r2d2bc css that needs to be made available, but untouched
   configureWebpack: {
     module: {

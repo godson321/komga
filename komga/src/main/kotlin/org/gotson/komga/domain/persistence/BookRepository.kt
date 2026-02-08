@@ -90,4 +90,10 @@ interface BookRepository {
   fun countGroupedByLibraryId(): Map<String, Int>
 
   fun getFilesizeGroupedByLibraryId(): Map<String, BigDecimal>
+
+  fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int
 }

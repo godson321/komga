@@ -72,6 +72,19 @@ class SidecarDao(
       .groupBy(sc.LIBRARY_ID)
       .fetchMap(sc.LIBRARY_ID, DSL.count(sc.URL))
 
+  override fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int =
+    dslRW
+      .update(sc)
+      .set(sc.URL, DSL.replace(sc.URL, oldPath, newPath))
+      .set(sc.PARENT_URL, DSL.replace(sc.PARENT_URL, oldPath, newPath))
+      .where(sc.LIBRARY_ID.eq(libraryId))
+      .and(sc.URL.contains(oldPath).or(sc.PARENT_URL.contains(oldPath)))
+      .execute()
+
   private fun SidecarRecord.toDomain() =
     SidecarStored(
       url = URL(url),

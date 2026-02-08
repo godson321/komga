@@ -148,31 +148,6 @@ logging:
 }
 ```
 
-### 4. 启动命令
-
-启动前请先设置控制台编码为 UTF-8：
-
-**后端启动（PowerShell）：**
-```powershell
-chcp 65001; .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
-```
-
-**前端启动（PowerShell）：**
-```powershell
-chcp 65001; npm install --prefix komga-webui; npm run serve --prefix komga-webui
-```
-
-**后端启动（CMD）：**
-```cmd
-chcp 65001 && .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
-```
-
-**前端启动（CMD）：**
-```cmd
-chcp 65001 && npm install --prefix komga-webui && npm run serve --prefix komga-webui
-```
-
-> **注意**：后端必须使用 `dev` profile 才能与前端（端口8081）进行 CORS 通信，且端口为 25600。
 
 ### 5. Windows 系统编码（终极方案）
 
@@ -213,3 +188,43 @@ chcp 65001 && npm install --prefix komga-webui && npm run serve --prefix komga-w
 ## 致谢
 
 Komga 图标基于 [Freepik](https://www.freepik.com/home) 在 www.flaticon.com 上制作的图标。
+
+
+
+
+
+
+
+
+
+
+### 4. 启动命令
+
+启动前请先设置控制台编码为 UTF-8：
+
+**后端启动（CMD）：**
+```cmd
+chcp 65001 && .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
+```
+
+**前端启动（CMD）：**
+```cmd
+chcp 65001 && npm install --prefix komga-webui && npm run serve --prefix komga-webui
+```
+
+
+
+
+**后端启动（PowerShell）：**
+```powershell
+chcp 65001; .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
+chcp 65001; $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User"); .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
+```
+
+**前端启动（PowerShell）：**
+```powershell
+chcp 65001; npm install --prefix komga-webui; npm run serve --prefix komga-webui
+```
+
+
+> **注意**：后端必须使用 `dev` profile 才能与前端（端口8081）进行 CORS 通信，且端口为 25600。

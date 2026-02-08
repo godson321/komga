@@ -20,4 +20,10 @@ interface LibraryRepository {
   fun update(library: Library)
 
   fun count(): Long
+
+  fun migrateRootPath(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int
 }

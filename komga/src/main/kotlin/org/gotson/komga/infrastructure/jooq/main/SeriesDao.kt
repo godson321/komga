@@ -214,6 +214,18 @@ class SeriesDao(
       .groupBy(s.LIBRARY_ID)
       .fetchMap(s.LIBRARY_ID, DSL.count(s.ID))
 
+  override fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int =
+    dslRW
+      .update(s)
+      .set(s.URL, DSL.replace(s.URL, oldPath, newPath))
+      .where(s.LIBRARY_ID.eq(libraryId))
+      .and(s.URL.contains(oldPath))
+      .execute()
+
   private fun SeriesRecord.toDomain() =
     Series(
       name = name,

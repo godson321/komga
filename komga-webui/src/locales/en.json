@@ -574,6 +574,15 @@
       "button_confirm": "Empty",
       "title": "Empty trash for library"
     },
+    "migrate_path": {
+      "title": "Migrate Library Paths",
+      "description": "Migrate all paths in this library from one location to another without re-analyzing books. This is useful when moving your library to a different drive or folder.",
+      "old_path": "Old path prefix",
+      "new_path": "New path prefix",
+      "button_confirm": "Migrate",
+      "result": "Migration complete: {series} series, {books} books, {sidecars} sidecars updated.",
+      "success": "Path migration complete: {series} series, {books} books updated."
+    },
     "file_browser": {
       "button_cancel": "Cancel",
       "button_confirm_default": "Choose",
@@ -907,6 +916,7 @@
     "edit": "Edit",
     "edit_metadata": "Edit metadata",
     "empty_trash": "Empty trash",
+    "migrate_path": "Migrate paths",
     "mark_read": "Mark as read",
     "mark_unread": "Mark as unread",
     "pin": "Pin",

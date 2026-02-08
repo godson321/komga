@@ -418,6 +418,18 @@ class BookDao(
       .groupBy(b.LIBRARY_ID)
       .fetchMap(b.LIBRARY_ID, DSL.sum(b.FILE_SIZE))
 
+  override fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int =
+    dslRW
+      .update(b)
+      .set(b.URL, DSL.replace(b.URL, oldPath, newPath))
+      .where(b.LIBRARY_ID.eq(libraryId))
+      .and(b.URL.contains(oldPath))
+      .execute()
+
   private fun BookRecord.toDomain() =
     Book(
       name = name,

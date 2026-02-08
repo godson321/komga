@@ -9,6 +9,7 @@ import org.gotson.komga.language.toCurrentTimeZone
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.ResultQuery
+import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -173,6 +174,18 @@ class LibraryDao(
         }.execute()
     }
   }
+
+  override fun migrateRootPath(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int =
+    dslRW
+      .update(l)
+      .set(l.ROOT, DSL.replace(l.ROOT, oldPath, newPath))
+      .where(l.ID.eq(libraryId))
+      .and(l.ROOT.contains(oldPath))
+      .execute()
 
   private fun LibraryRecord.toDomain(directoryExclusions: Set<String>) =
     Library(

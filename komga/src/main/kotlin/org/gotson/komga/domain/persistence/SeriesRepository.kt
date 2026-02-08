@@ -52,4 +52,10 @@ interface SeriesRepository {
   fun count(): Long
 
   fun countGroupedByLibraryId(): Map<String, Int>
+
+  fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int
 }

@@ -20,4 +20,10 @@ interface SidecarRepository {
   fun deleteByLibraryId(libraryId: String)
 
   fun countGroupedByLibraryId(): Map<String, Int>
+
+  fun migrateUrls(
+    libraryId: String,
+    oldPath: String,
+    newPath: String,
+  ): Int
 }

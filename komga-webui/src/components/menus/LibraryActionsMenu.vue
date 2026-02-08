@@ -45,6 +45,9 @@
         <v-list-item @click="edit" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.edit') }}</v-list-item-title>
         </v-list-item>
+        <v-list-item @click="showMigratePathDialog = true" v-if="isAdmin">
+          <v-list-item-title>{{ $t('menu.migrate_path') }}</v-list-item-title>
+        </v-list-item>
         <v-list-item @click="promptDeleteLibrary"
                      class="list-danger"
                      v-if="isAdmin"
@@ -77,16 +80,23 @@
       :button-confirm="$t('dialog.empty_trash.button_confirm')"
       @confirm="emptyTrash"
     />
+
+    <path-migration-dialog
+      v-model="showMigratePathDialog"
+      :library="library"
+      @migrated="onMigrated"
+    />
   </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import ConfirmationDialog from '@/components/dialogs/ConfirmationDialog.vue'
+import PathMigrationDialog from '@/components/dialogs/PathMigrationDialog.vue'
 import {LibraryDto} from '@/types/komga-libraries'
 
 export default Vue.extend({
   name: 'LibraryActionsMenu',
-  components: {ConfirmationDialog},
+  components: {ConfirmationDialog, PathMigrationDialog},
   props: {
     library: {
       type: Object as () => LibraryDto,
@@ -98,6 +108,7 @@ export default Vue.extend({
       confirmAnalyzeModal: false,
       confirmRefreshMetadataModal: false,
       confirmEmptyTrash: false,
+      showMigratePathDialog: false,
     }
   },
   computed: {
@@ -123,6 +134,15 @@ export default Vue.extend({
     },
     promptDeleteLibrary() {
       this.$store.dispatch('dialogDeleteLibrary', this.library)
+    },
+    onMigrated(result: any) {
+      this.$eventHub.$emit('showSnackbar', {
+        message: this.$t('dialog.migrate_path.success', {
+          series: result.seriesUpdated,
+          books: result.booksUpdated,
+        }),
+        color: 'success',
+      })
     },
   },
 })

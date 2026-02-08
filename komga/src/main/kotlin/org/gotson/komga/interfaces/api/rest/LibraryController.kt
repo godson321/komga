@@ -18,12 +18,15 @@ import org.gotson.komga.domain.persistence.BookRepository
 import org.gotson.komga.domain.persistence.LibraryRepository
 import org.gotson.komga.domain.persistence.SeriesRepository
 import org.gotson.komga.domain.service.LibraryLifecycle
+import org.gotson.komga.domain.service.LibraryPathMigrationService
 import org.gotson.komga.infrastructure.openapi.OpenApiConfiguration
 import org.gotson.komga.infrastructure.security.KomgaPrincipal
 import org.gotson.komga.infrastructure.web.filePathToUrl
 import org.gotson.komga.interfaces.api.rest.dto.LibraryCreationDto
 import org.gotson.komga.interfaces.api.rest.dto.LibraryDto
 import org.gotson.komga.interfaces.api.rest.dto.LibraryUpdateDto
+import org.gotson.komga.interfaces.api.rest.dto.PathMigrationDto
+import org.gotson.komga.interfaces.api.rest.dto.PathMigrationResultDto
 import org.gotson.komga.interfaces.api.rest.dto.toDomain
 import org.gotson.komga.interfaces.api.rest.dto.toDto
 import org.springframework.data.domain.Pageable
@@ -54,6 +57,7 @@ class LibraryController(
   private val libraryRepository: LibraryRepository,
   private val bookRepository: BookRepository,
   private val seriesRepository: SeriesRepository,
+  private val libraryPathMigrationService: LibraryPathMigrationService,
 ) {
   @GetMapping
   @Operation(
@@ -282,5 +286,24 @@ class LibraryController(
     libraryRepository.findByIdOrNull(libraryId)?.let { library ->
       taskEmitter.emptyTrash(library.id, HIGH_PRIORITY)
     } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+  }
+
+  @PostMapping("{libraryId}/migrate-path")
+  @PreAuthorize("hasRole('ADMIN')")
+  @Operation(
+    summary = "Migrate library paths",
+    description = "Migrate all paths in the library from oldPathPrefix to newPathPrefix without re-analyzing books",
+  )
+  fun migrateLibraryPath(
+    @PathVariable libraryId: String,
+    @Valid @RequestBody
+    migration: PathMigrationDto,
+  ): PathMigrationResultDto {
+    libraryRepository.findByIdOrNull(libraryId)
+      ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+
+    return libraryPathMigrationService
+      .migratePath(libraryId, migration.oldPathPrefix, migration.newPathPrefix)
+      .toDto()
   }
 }
