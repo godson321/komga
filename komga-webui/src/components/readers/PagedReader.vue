@@ -25,8 +25,10 @@
                        :transition="animations ? undefined : false"
                        :reverse-transition="animations ? undefined : false"
       >
-        <div class="full-height d-flex flex-column justify-center">
-          <div :class="`d-flex flex-row${flipDirection ? '-reverse' : ''} justify-center px-0 mx-0`">
+        <div class="full-height d-flex flex-column justify-center" style="overflow: auto;">
+          <div :class="`d-flex flex-row${flipDirection ? '-reverse' : ''} justify-center px-0 mx-0`"
+               :style="zoomStyle"
+          >
             <img v-for="(page, j) in spread"
                  :alt="`Page ${page.number}`"
                  :key="`spread${i}-${j}`"
@@ -87,7 +89,6 @@ export default Vue.extend({
   name: 'PagedReader',
   data: function () {
     return {
-      logger: 'PagedReader',
       carouselPage: 0,
       spreads: [] as PageDtoWithUrl[][],
       wheelThrottled: false,
@@ -127,6 +128,10 @@ export default Vue.extend({
       type: Number,
       default: 2,
     },
+    zoom: {
+      type: Number,
+      default: 100,
+    },
   },
   watch: {
     pages: {
@@ -136,7 +141,6 @@ export default Vue.extend({
       immediate: true,
     },
     carouselPage(val, old) {
-      this.$debug('[watch:carouselPage', `old:${old}`, `new:${val}`)
       if (this.carouselPage >= 0 && this.carouselPage < this.spreads.length && this.spreads.length > 0) {
         const currentSpread = this.spreads[this.carouselPage]
         const currentPage = currentSpread.length == 2 && currentSpread[1].mediaType ? currentSpread[1] : currentSpread[0]
@@ -146,9 +150,7 @@ export default Vue.extend({
       }
     },
     page(val, old) {
-      this.$debug('[watch:page]', `old:${old}`, `new:${val}`)
       const spreadIndex = this.toSpreadIndex(val)
-      this.$debug('[watch:page]', `toSpreadIndex:${spreadIndex}`)
       this.carouselPage = spreadIndex
     },
     pageLayout: {
@@ -204,6 +206,11 @@ export default Vue.extend({
     },
     isDoublePages(): boolean {
       return this.pageLayout === PagedReaderLayout.DOUBLE_PAGES || this.pageLayout === PagedReaderLayout.DOUBLE_NO_COVER
+    },
+    zoomStyle(): string {
+      if (this.zoom === 100) return ''
+      const scale = this.zoom / 100
+      return `transform: scale(${scale}); transform-origin: center center;`
     },
   },
   methods: {
@@ -299,7 +306,6 @@ export default Vue.extend({
       }
     },
     toSpreadIndex(i: number): number {
-      this.$debug('[toSpreadIndex]', `i:${i}`, `isDoublePages:${this.isDoublePages}`)
       if (this.spreads.length > 0) {
         if (this.isDoublePages) {
           for (let j = 0; j < this.spreads.length; j++) {
