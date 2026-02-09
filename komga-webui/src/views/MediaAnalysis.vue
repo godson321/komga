@@ -15,14 +15,14 @@
     >
       <template v-slot:top>
         <v-container>
-          <v-row>
-            <v-col cols="12" sm="6">
+          <v-row align="center">
+            <v-col cols="12" sm="5">
               <v-chip-group v-model="filterStatus" color="primary" mandatory multiple>
                 <v-chip filter value="error">{{ $t('common.error') }}</v-chip>
                 <v-chip filter value="unsupported">{{ $t('book_card.unsupported') }}</v-chip>
               </v-chip-group>
             </v-col>
-            <v-col cols="12" sm="6">
+            <v-col cols="12" sm="5">
               <v-select v-model="filterLibraries"
                         :items="filterLibrariesOptions"
                         :label="$t('navigation.libraries')"
@@ -31,7 +31,14 @@
                         multiple
                         chips
                         deletable-chips
+                        hide-details
               />
+            </v-col>
+            <v-col cols="12" sm="2" class="text-center">
+              <v-btn color="primary" :loading="analyzing" :disabled="books.length === 0" @click="analyzeAll">
+                <v-icon left>mdi-refresh</v-icon>
+                {{ $t('media_analysis.analyze_all') }}
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -87,6 +94,7 @@ export default Vue.extend({
       books: [] as BookDto[],
       totalBooks: 0,
       loading: true,
+      analyzing: false,
       options: {} as any,
       filterStatus: ['error', 'unsupported'],
       filterLibraries: [] as string[],
@@ -139,6 +147,18 @@ export default Vue.extend({
   methods: {
     getLibraryName(libraryId: string): string {
       return this.$store.getters.getLibraryById(libraryId).name
+    },
+    async analyzeAll() {
+      this.analyzing = true
+      try {
+        for (const book of this.books) {
+          await this.$komgaBooks.analyzeBook(book)
+        }
+      } catch (e) {
+        console.error('Error analyzing books', e)
+      } finally {
+        this.analyzing = false
+      }
     },
     async loadBooks() {
       this.loading = true

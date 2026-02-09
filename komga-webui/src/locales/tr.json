@@ -1,5 +1,6 @@
-{
+﻿{
   "$vuetify": {
+    "badge": "Badge",
     "dataFooter": {
       "pageText": "{0}-{1} . sayfa (Toplam {2} sayfa)"
     },

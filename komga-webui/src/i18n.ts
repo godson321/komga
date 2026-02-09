@@ -1,7 +1,20 @@
 import Vue from 'vue'
 import VueI18n, {LocaleMessages} from 'vue-i18n'
+import vuetifyEn from 'vuetify/lib/locale/en'
 
 Vue.use(VueI18n)
+
+function deepMerge(target: any, source: any): any {
+  const result = {...target}
+  for (const key of Object.keys(source)) {
+    if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+      result[key] = deepMerge(result[key] || {}, source[key])
+    } else if (!(key in result)) {
+      result[key] = source[key]
+    }
+  }
+  return result
+}
 
 function loadLocaleMessages(): LocaleMessages {
   const locales = require.context('./locales', true, /[A-Za-z0-9-_,\s]+\.json$/i)
@@ -10,7 +23,11 @@ function loadLocaleMessages(): LocaleMessages {
     const matched = key.match(/([A-Za-z0-9-_]+)\./i)
     if (matched && matched.length > 1) {
       const locale = matched[1]
-      messages[locale] = locales(key)
+      const localeMessages = locales(key)
+      // Merge Vuetify default English locale as base for $vuetify keys,
+      // so that missing keys don't trigger fallback warnings
+      localeMessages['$vuetify'] = deepMerge(localeMessages['$vuetify'] || {}, vuetifyEn)
+      messages[locale] = localeMessages
     }
   })
   return messages

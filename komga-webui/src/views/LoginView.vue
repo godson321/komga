@@ -137,7 +137,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {email, required} from 'vuelidate/lib/validators'
+import {required} from 'vuelidate/lib/validators'
 import {Theme} from '@/types/themes'
 import {OAuth2ClientDto} from '@/types/komga-oauth2'
 import urls from '@/functions/urls'
@@ -165,7 +165,7 @@ export default Vue.extend({
   },
   validations: {
     form: {
-      login: {required, email},
+      login: {required},
       password: {required},
     },
   },

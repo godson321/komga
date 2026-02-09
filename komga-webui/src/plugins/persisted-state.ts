@@ -16,6 +16,7 @@ export const persistedModule: Module<any, any> = {
         padding: '',
         margin: '',
       },
+      zoom: 100,
       readingDirection: '',
       swipe: false,
       alwaysFullscreen: false,
@@ -118,6 +119,9 @@ export const persistedModule: Module<any, any> = {
     },
     setWebreaderContinuousMargin(state, val) {
       state.webreader.continuous.margin = val
+    },
+    setWebreaderZoom(state, val) {
+      state.webreader.zoom = val
     },
     setWebreaderReadingDirection(state, val) {
       state.webreader.readingDirection = val

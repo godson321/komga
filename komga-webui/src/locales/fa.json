@@ -1,5 +1,6 @@
-{
+﻿{
   "$vuetify": {
+    "badge": "Badge",
     "dataFooter": {
       "pageText": "{2}{0}-{1} از {2}"
     },

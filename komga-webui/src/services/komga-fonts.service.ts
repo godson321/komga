@@ -14,8 +14,8 @@ export default class KomgaFontsService {
       return (await this.http.get(`${API_FONTS}/families`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve font families'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

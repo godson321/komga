@@ -41,6 +41,7 @@ class InitialUsersDevConfiguration {
   fun initialUsers(): List<KomgaUser> =
     listOf(
       KomgaUser("admin@example.org", "admin", roles = UserRoles.entries.toSet()),
+      KomgaUser("admin", "123456", roles = UserRoles.entries.toSet()),
       KomgaUser("user@example.org", "user"),
     )
 }

@@ -28,8 +28,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve authors'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -47,8 +47,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve authors names'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -66,8 +66,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve genres'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -78,8 +78,8 @@ export default class KomgaReferentialService {
       return (await this.http.get('/api/v1/tags')).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve tags'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -97,8 +97,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve sharing labels'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -116,8 +116,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve series and book tags'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -136,8 +136,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve book tags'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -155,8 +155,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve publishers'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -174,8 +174,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve age ratings'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -193,8 +193,8 @@ export default class KomgaReferentialService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve series release dates'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -221,8 +221,8 @@ export default class KomgaReferentialService {
       return ret
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve languages'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

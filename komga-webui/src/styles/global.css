@@ -14,6 +14,63 @@ html {
     text-decoration: underline;
 }
 
+/* ===== Dashboard color tokens (Light) ===== */
+.theme--light {
+  --db-banner-from: #1565C0;
+  --db-banner-to: #1E88E5;
+  --db-banner-badge-bg: rgba(255, 255, 255, 0.25);
+  --db-banner-badge-border: rgba(255, 255, 255, 0.4);
+
+  --db-stat-series-bg: linear-gradient(135deg, #5E35B1 0%, #7E57C2 100%);
+  --db-stat-books-bg: linear-gradient(135deg, #E65100 0%, #F4511E 100%);
+
+  --db-progress-bg: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+  --db-progress-glow: rgba(129, 199, 132, 0.5);
+  --db-progress-ring: #81C784;
+
+  --db-activity-bg: linear-gradient(135deg, #263238 0%, #37474F 100%);
+  --db-activity-glow: rgba(0, 94, 211, 0.5);
+  --db-activity-accent: #64B5F6;
+}
+
+/* ===== Dashboard color tokens (Dark) ===== */
+.theme--dark {
+  --db-banner-from: #1A237E;
+  --db-banner-to: #283593;
+  --db-banner-badge-bg: rgba(255, 255, 255, 0.1);
+  --db-banner-badge-border: rgba(255, 255, 255, 0.2);
+
+  --db-stat-series-bg: linear-gradient(135deg, #4527A0 0%, #5E35B1 100%);
+  --db-stat-books-bg: linear-gradient(135deg, #BF360C 0%, #E64A19 100%);
+
+  --db-progress-bg: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+  --db-progress-glow: rgba(102, 187, 106, 0.4);
+  --db-progress-ring: #66BB6A;
+
+  --db-activity-bg: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+  --db-activity-glow: rgba(120, 186, 236, 0.4);
+  --db-activity-accent: #78baec;
+}
+
+/* ===== Dashboard color tokens (Ocean) ===== */
+.theme-ocean .theme--dark {
+  --db-banner-from: #0A1929;
+  --db-banner-to: #1B3A5C;
+  --db-banner-badge-bg: rgba(100, 181, 246, 0.12);
+  --db-banner-badge-border: rgba(100, 181, 246, 0.25);
+
+  --db-stat-series-bg: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+  --db-stat-books-bg: linear-gradient(135deg, #4E342E 0%, #6D4C41 100%);
+
+  --db-progress-bg: linear-gradient(135deg, #0D3B2E 0%, #1B5E45 100%);
+  --db-progress-glow: rgba(129, 199, 132, 0.3);
+  --db-progress-ring: #81C784;
+
+  --db-activity-bg: linear-gradient(135deg, #0A1929 0%, #152D4A 100%);
+  --db-activity-glow: rgba(100, 181, 246, 0.3);
+  --db-activity-accent: #64B5F6;
+}
+
 /* ===== Ocean "星空蓝" theme background overrides ===== */
 .theme-ocean .theme--dark.v-application {
     background: #0D1B2A !important;

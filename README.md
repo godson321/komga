@@ -217,8 +217,8 @@ chcp 65001 && npm install --prefix komga-webui && npm run serve --prefix komga-w
 
 **后端启动（PowerShell）：**
 ```powershell
-chcp 65001; .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
-chcp 65001; $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User"); .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,noclaim,localdb"
+chcp 65001; .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,localdb"
+chcp 65001; $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User"); .\gradlew.bat bootRun --no-daemon --args="--spring.profiles.active=dev,localdb"
 ```
 
 **前端启动（PowerShell）：**

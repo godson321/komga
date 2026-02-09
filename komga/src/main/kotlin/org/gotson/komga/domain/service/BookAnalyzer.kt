@@ -15,6 +15,8 @@ import org.gotson.komga.domain.model.MediaUnsupportedException
 import org.gotson.komga.domain.model.NoThumbnailFoundException
 import org.gotson.komga.domain.model.ThumbnailBook
 import org.gotson.komga.domain.model.TypedBytes
+import org.gotson.komga.domain.model.SeriesMetadata
+import org.gotson.komga.domain.persistence.SeriesMetadataRepository
 import org.gotson.komga.infrastructure.configuration.KomgaSettingsProvider
 import org.gotson.komga.infrastructure.hash.Hasher
 import org.gotson.komga.infrastructure.image.ImageAnalyzer
@@ -47,6 +49,7 @@ class BookAnalyzer(
   private val hasher: Hasher,
   @param:Value("#{@komgaProperties.pageHashing}") private val pageHashing: Int,
   private val komgaSettingsProvider: KomgaSettingsProvider,
+  private val seriesMetadataRepository: SeriesMetadataRepository,
   @Qualifier("thumbnailType")
   private val thumbnailType: ImageType,
   @Qualifier("pdfImageType")
@@ -249,10 +252,23 @@ class BookAnalyzer(
       throw MediaNotReadyException()
     }
 
-    val thumbnail =
+    val coverBytes =
       getPoster(book)?.let { cover ->
-        imageConverter.resizeImageToByteArray(cover.bytes, thumbnailType, komgaSettingsProvider.thumbnailSize.maxEdge)
+        if (imageConverter.isDoublePage(cover.bytes)) {
+          val readingDirection = seriesMetadataRepository.findByIdOrNull(book.book.seriesId)?.readingDirection
+          val keepLeft = when (readingDirection) {
+            SeriesMetadata.ReadingDirection.RIGHT_TO_LEFT -> true
+            SeriesMetadata.ReadingDirection.LEFT_TO_RIGHT -> false
+            else -> imageConverter.detectCoverSide(cover.bytes)  // smart detection when unknown
+          }
+          logger.info { "Double-page cover detected for book ${book.book.id}, readingDirection=$readingDirection, keepLeft=$keepLeft" }
+          imageConverter.cropDoublePage(cover.bytes, keepLeft)
+        } else {
+          cover.bytes
+        }
       } ?: throw NoThumbnailFoundException()
+
+    val thumbnail = imageConverter.resizeImageToByteArray(coverBytes, thumbnailType, komgaSettingsProvider.thumbnailSize.maxEdge)
 
     return ThumbnailBook(
       thumbnail = thumbnail,

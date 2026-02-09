@@ -27,17 +27,23 @@
             <span>{{ $t('bookreader.tooltip_incognito') }}</span>
           </v-tooltip>
 
+          <div class="d-flex align-center px-1" style="border-left: 1px solid rgba(255,255,255,0.12); border-right: 1px solid rgba(255,255,255,0.12)">
+            <v-btn icon small @click="zoomOut" :disabled="zoom <= 25">
+              <v-icon small>mdi-minus</v-icon>
+            </v-btn>
+            <v-btn text x-small @click="zoomReset" class="px-1" style="min-width: 42px; text-transform: none;">
+              {{ zoom }}%
+            </v-btn>
+            <v-btn icon small @click="zoomIn" :disabled="zoom >= 400">
+              <v-icon small>mdi-plus</v-icon>
+            </v-btn>
+          </div>
+
           <v-btn
             icon
             :disabled="!screenfull.isEnabled"
             @click="screenfull.isFullscreen ? screenfull.exit() : enterFullscreen()">
             <v-icon>{{ fullscreenIcon }}</v-icon>
-          </v-btn>
-
-          <v-btn
-            icon
-            @click="showHelp = !showHelp">
-            <v-icon>mdi-help-circle</v-icon>
           </v-btn>
 
           <v-btn
@@ -57,6 +63,12 @@
             @click="showSettings = !showSettings"
           >
             <v-icon>mdi-cog</v-icon>
+          </v-btn>
+
+          <v-btn
+            icon
+            @click="showHelp = !showHelp">
+            <v-icon>mdi-help-circle</v-icon>
           </v-btn>
 
           <v-menu offset-y>
@@ -93,7 +105,7 @@
           horizontal
           v-if="showToolbars"
         >
-          <v-row justify="center">
+          <v-row justify="center" align="center">
             <!--  Menu: page slider  -->
             <v-col class="px-0">
               <v-slider
@@ -121,6 +133,7 @@
                 </template>
               </v-slider>
             </v-col>
+
           </v-row>
 
         </v-toolbar>
@@ -136,6 +149,7 @@
         :scale="continuousScale"
         :sidePadding="sidePadding"
         :page-margin="pageMargin"
+        :zoom="zoom"
         @menu="toggleToolbars()"
         @jump-previous="jumpToPrevious()"
         @jump-next="jumpToNext()"
@@ -151,6 +165,7 @@
         :animations="animations"
         :swipe="swipe"
         :preload-pages="preloadPages"
+        :zoom="zoom"
         @menu="toggleToolbars()"
         @jump-previous="jumpToPrevious()"
         @jump-next="jumpToNext()"
@@ -413,6 +428,7 @@ export default Vue.extend({
       readingDirection: ReadingDirection.LEFT_TO_RIGHT,
         backgroundColor: 'black',
         preloadPages: 2,
+        zoom: 100,
       },
       shortcuts: {} as any,
       notification: {
@@ -486,6 +502,7 @@ export default Vue.extend({
     this.pageMargin = this.$store.state.persistedState.webreader.continuous.margin
     this.backgroundColor = this.$store.state.persistedState.webreader.background
     this.preloadPages = this.$store.state.persistedState.webreader.paged.preloadPages
+    this.zoom = this.$store.state.persistedState.webreader.zoom
 
     this.setup(this.bookId, Number(this.$route.query.page))
   },
@@ -704,6 +721,16 @@ export default Vue.extend({
         else screenfull.isEnabled && screenfull.exit()
       },
     },
+    zoom: {
+      get: function (): number {
+        return this.settings.zoom
+      },
+      set: function (val: number): void {
+        const clamped = Math.max(25, Math.min(400, val))
+        this.settings.zoom = clamped
+        this.$store.commit('setWebreaderZoom', clamped)
+      },
+    },
   },
   methods: {
     toggleLight() {
@@ -900,6 +927,18 @@ export default Vue.extend({
         const text = this.pageMargin === 0 ? this.$t('bookreader.settings.side_padding_none').toString() : `${this.pageMargin}px`
         this.sendNotification(`${this.$t('bookreader.cycling_page_margin')}: ${text}`)
       }
+    },
+    zoomIn() {
+      this.zoom = Math.min(400, this.zoom + 25)
+      this.sendNotification(`${this.$t('bookreader.zoom')}: ${this.zoom}%`)
+    },
+    zoomOut() {
+      this.zoom = Math.max(25, this.zoom - 25)
+      this.sendNotification(`${this.$t('bookreader.zoom')}: ${this.zoom}%`)
+    },
+    zoomReset() {
+      this.zoom = 100
+      this.sendNotification(`${this.$t('bookreader.zoom')}: ${this.zoom}%`)
     },
     cyclePageLayout() {
       if (this.continuousReader) return

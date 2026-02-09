@@ -42,7 +42,7 @@ export default class KomgaUsersService {
         }
       }
       if (e.response?.data?.message) {
-        msg += `: ${e.response.data.message}`
+        msg += `: ${e.response?.data?.message}`
       } else {
         msg += `: ${e.message}`
       }
@@ -55,8 +55,8 @@ export default class KomgaUsersService {
       return (await this.http.get(`${API_USERS}/me`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve current user'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -67,8 +67,8 @@ export default class KomgaUsersService {
       return (await this.http.get(`${API_USERS}`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve all users'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -79,8 +79,8 @@ export default class KomgaUsersService {
       return (await this.http.post(API_USERS, user)).data
     } catch (e) {
       let msg = `An error occurred while trying to add user '${user.email}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -91,8 +91,8 @@ export default class KomgaUsersService {
       await this.http.patch(`${API_USERS}/${userId}`, patch)
     } catch (e) {
       let msg = `An error occurred while trying to patch user '${userId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -103,8 +103,8 @@ export default class KomgaUsersService {
       await this.http.delete(`${API_USERS}/${user.id}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete user '${user.email}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -115,8 +115,8 @@ export default class KomgaUsersService {
       await this.http.patch(`${API_USERS}/${user.id}/password`, newPassword)
     } catch (e) {
       let msg = `An error occurred while trying to update password for user ${user.email}`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -127,8 +127,8 @@ export default class KomgaUsersService {
       await this.http.post('api/logout')
     } catch (e) {
       let msg = 'An error occurred while trying to logout'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -142,8 +142,8 @@ export default class KomgaUsersService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve authentication activity'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -157,8 +157,8 @@ export default class KomgaUsersService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve authentication activity'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -173,8 +173,8 @@ export default class KomgaUsersService {
       return (await this.http.get(`${API_USERS}/${userId}/authentication-activity/latest`, {params: params})).data
     } catch (e) {
       let msg = `An error occurred while trying to retrieve latest authentication activity for user ${userId}`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -185,8 +185,8 @@ export default class KomgaUsersService {
       return (await this.http.get(`${API_USERS}/me/api-keys`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve api keys'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -197,8 +197,8 @@ export default class KomgaUsersService {
       return (await this.http.post(`${API_USERS}/me/api-keys`, apiKeyRequest)).data
     } catch (e) {
       let msg = 'An error occurred while trying to create api key'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -209,8 +209,8 @@ export default class KomgaUsersService {
       await this.http.delete(`${API_USERS}/me/api-keys/${apiKeyId}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete api key ${apiKeyId}`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

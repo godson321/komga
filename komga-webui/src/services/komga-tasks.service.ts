@@ -14,8 +14,8 @@ export default class KomgaTasksService {
       return (await this.http.delete(API_TASKS)).data
     } catch (e) {
       let msg = 'An error occurred while trying to delete all tasks'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

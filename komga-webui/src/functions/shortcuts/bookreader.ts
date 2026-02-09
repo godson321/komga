@@ -20,6 +20,15 @@ export const shortcutsSettings = [
   new Shortcut('bookreader.shortcuts.fullscreen',
     (ctx: any) => ctx.switchFullscreen()
     , 'f'),
+  new Shortcut('bookreader.shortcuts.zoom_in',
+    (ctx: any) => ctx.zoomIn()
+    , '=', '+/='),
+  new Shortcut('bookreader.shortcuts.zoom_out',
+    (ctx: any) => ctx.zoomOut()
+    , '-', '-'),
+  new Shortcut('bookreader.shortcuts.zoom_reset',
+    (ctx: any) => ctx.zoomReset()
+    , '0', '0'),
 ]
 
 export const shortcutsMenus = [

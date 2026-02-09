@@ -25,8 +25,8 @@ export default class KomgaCollectionsService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve collections'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -37,8 +37,8 @@ export default class KomgaCollectionsService {
       return (await this.http.get(`${API_COLLECTIONS}/${collectionId}`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve collection'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -49,8 +49,8 @@ export default class KomgaCollectionsService {
       return (await this.http.post(API_COLLECTIONS, collection)).data
     } catch (e) {
       let msg = `An error occurred while trying to add collection '${collection.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -61,8 +61,8 @@ export default class KomgaCollectionsService {
       await this.http.patch(`${API_COLLECTIONS}/${collectionId}`, collection)
     } catch (e) {
       let msg = `An error occurred while trying to update collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -73,8 +73,8 @@ export default class KomgaCollectionsService {
       await this.http.delete(`${API_COLLECTIONS}/${collectionId}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -105,8 +105,8 @@ export default class KomgaCollectionsService {
       })).data
     } catch (e) {
       let msg = `An error occurred while trying to retrieve series for collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -117,8 +117,8 @@ export default class KomgaCollectionsService {
       return (await this.http.get(`${API_COLLECTIONS}/${collectionId}/thumbnails`)).data
     } catch (e) {
       let msg = `An error occurred while trying to retrieve thumbnails for collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -132,8 +132,8 @@ export default class KomgaCollectionsService {
       await this.http.post(`${API_COLLECTIONS}/${collecitonId}/thumbnails`, body)
     } catch (e) {
       let msg = `An error occurred while trying to upload thumbnail for collection '${collecitonId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -144,8 +144,8 @@ export default class KomgaCollectionsService {
       await this.http.delete(`${API_COLLECTIONS}/${collectionId}/thumbnails/${thumbnailId}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete thumbnail for collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -156,8 +156,8 @@ export default class KomgaCollectionsService {
       await this.http.put(`${API_COLLECTIONS}/${collectionId}/thumbnails/${thumbnailId}/selected`)
     } catch (e) {
       let msg = `An error occurred while trying to mark thumbnail as selected for collection '${collectionId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

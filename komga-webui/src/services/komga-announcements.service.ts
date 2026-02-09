@@ -15,8 +15,8 @@ export default class KomgaAnnouncementsService {
       return (await this.http.get(API_ANNOUNCEMENTS)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve announcements'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -27,8 +27,8 @@ export default class KomgaAnnouncementsService {
       await this.http.put(API_ANNOUNCEMENTS, announcementIds)
     } catch (e) {
       let msg = 'An error occurred while trying to mark announcements as read'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

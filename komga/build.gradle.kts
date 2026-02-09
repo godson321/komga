@@ -171,6 +171,17 @@ tasks {
       "-Dsun.stdout.encoding=UTF-8",
       "-Dsun.stderr.encoding=UTF-8",
     )
+    val nativeLibDir =
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) "$rootDir/komga-tray/lib/windows/x64"
+      else if (Os.isFamily(Os.FAMILY_MAC)) {
+        if (System.getProperty("os.arch") == "aarch64") "$rootDir/komga-tray/lib/mac/aarch64"
+        else "$rootDir/komga-tray/lib/mac/x64"
+      } else null
+    if (nativeLibDir != null) {
+      val pathSep = System.getProperty("path.separator")
+      val currentPath = System.getenv("PATH") ?: ""
+      environment("PATH", "$nativeLibDir$pathSep$currentPath")
+    }
   }
 
   register<Exec>("npmInstall") {

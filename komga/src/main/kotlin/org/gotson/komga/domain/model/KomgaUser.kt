@@ -1,13 +1,11 @@
 package org.gotson.komga.domain.model
 
 import com.github.f4b6a3.tsid.TsidCreator
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import org.gotson.komga.language.lowerNotBlank
 import java.time.LocalDateTime
 
 data class KomgaUser(
-  @Email(regexp = ".+@.+\\..+")
   @NotBlank
   val email: String,
   @NotBlank

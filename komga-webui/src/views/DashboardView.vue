@@ -47,6 +47,43 @@
     />
 
     <v-container fluid>
+      <!-- Combined Row: 4 Columns -->
+      <v-row class="mb-4">
+        <!-- Welcome Banner -->
+        <v-col cols="12" sm="6" lg="3">
+          <dashboard-welcome-banner
+            :unread-count="mockStats.bookCount - mockStats.readCount"
+            :streak="mockStats.streak"
+            :weekly-read="mockStats.weeklyRead"
+            style="height: 180px"
+          />
+        </v-col>
+
+        <!-- Series & Books Card -->
+        <v-col cols="12" sm="6" lg="3">
+          <dashboard-stat-card
+            style="height: 180px"
+            :series-count="mockStats.seriesCount"
+            :book-count="mockStats.bookCount"
+          />
+        </v-col>
+
+        <!-- Read Progress Card -->
+        <v-col cols="12" sm="6" lg="3">
+          <dashboard-read-progress
+            style="height: 180px"
+            :book-count="mockStats.bookCount"
+            :read-count="mockStats.readCount"
+          />
+        </v-col>
+
+        <!-- Reading Activity -->
+        <v-col cols="12" sm="6" lg="3">
+          <dashboard-reading-activity style="height: 180px" />
+        </v-col>
+      </v-row>
+
+      <!-- Original Sections -->
       <empty-state v-if="allEmpty && !loading"
                    :title="$t('common.nothing_to_show')"
                    icon="mdi-help-circle"
@@ -118,6 +155,10 @@ import ItemBrowser from '@/components/ItemBrowser.vue'
 import ToolbarSticky from '@/components/bars/ToolbarSticky.vue'
 import LibraryActionsMenu from '@/components/menus/LibraryActionsMenu.vue'
 import LibraryNavigation from '@/components/LibraryNavigation.vue'
+import DashboardStatCard from '@/components/dashboard/DashboardStatCard.vue'
+import DashboardReadProgress from '@/components/dashboard/DashboardReadProgress.vue'
+import DashboardReadingActivity from '@/components/dashboard/DashboardReadingActivity.vue'
+import DashboardWelcomeBanner from '@/components/dashboard/DashboardWelcomeBanner.vue'
 import {ReadStatus} from '@/types/enum-books'
 import {BookDto} from '@/types/komga-books'
 import {
@@ -187,6 +228,10 @@ export default Vue.extend({
     ItemBrowser,
     MultiSelectBar,
     LibraryActionsMenu,
+    DashboardStatCard,
+    DashboardReadProgress,
+    DashboardReadingActivity,
+    DashboardWelcomeBanner,
   },
   data: () => {
     return {
@@ -203,6 +248,15 @@ export default Vue.extend({
       loaderRecentlyReadBooks: undefined as PageLoader<BookDto> | undefined,
       selectedSeries: [] as SeriesDto[],
       selectedBooks: [] as BookDto[],
+      // Mock stats for demo - replace with real API data later
+      mockStats: {
+        libraryCount: 3,
+        seriesCount: 240,
+        bookCount: 4580,
+        readCount: 1237,
+        streak: 5,
+        weeklyRead: 33,
+      },
     }
   },
   created() {
@@ -383,7 +437,7 @@ export default Vue.extend({
       }
     },
     async scrollChanged(loader: PageLoader<any>, percent: number) {
-      if (percent > 0.95) await loader.loadNext()
+      if (percent > 0.95) await loader.loadNext().catch(e => console.warn(e.message))
     },
     getRequestLibraryId(libraryId: string): string[] {
       return libraryId !== LIBRARIES_ALL ? [libraryId] : this.$store.getters.getLibrariesPinned.map((it: LibraryDto) => it.id)
@@ -473,7 +527,8 @@ export default Vue.extend({
           this.loaderRecentlyAddedSeries?.reload(),
           this.loaderRecentlyUpdatedSeries?.reload(),
           this.loaderRecentlyReadBooks?.reload(),
-        ]).then(() => {
+        ]).catch(e => console.warn(e.message))
+          .finally(() => {
           this.loading = false
         })
       } else {
@@ -485,7 +540,8 @@ export default Vue.extend({
           this.loaderRecentlyAddedSeries?.loadNext(),
           this.loaderRecentlyUpdatedSeries?.loadNext(),
           this.loaderRecentlyReadBooks?.loadNext(),
-        ]).then(() => {
+        ]).catch(e => console.warn(e.message))
+          .finally(() => {
           this.loading = false
         })
       }
@@ -588,5 +644,4 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-
 </style>

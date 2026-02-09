@@ -181,6 +181,20 @@ class TaskHandler(
           is Task.FindBookThumbnailsToRegenerate -> {
             taskEmitter.generateBookThumbnail(bookLifecycle.findBookThumbnailsToRegenerate(task.forBiggerResultOnly), task.priority)
           }
+
+          is Task.CropDoublePageThumbnails -> {
+            taskEmitter.cropBookThumbnail(bookLifecycle.findDoublePageThumbnails(), task.priority)
+          }
+
+          is Task.CropBookThumbnail ->
+            bookRepository.findByIdOrNull(task.bookId)?.let { book ->
+              bookLifecycle.cropThumbnailAndPersist(book, task.keepLeft)
+            } ?: logger.warn { "Cannot execute task $task: Book does not exist" }
+
+          is Task.RestoreBookThumbnail ->
+            bookRepository.findByIdOrNull(task.bookId)?.let { book ->
+              bookLifecycle.restoreThumbnailAndPersist(book)
+            } ?: logger.warn { "Cannot execute task $task: Book does not exist" }
         }
       }.also {
         logger.info { "Task $task executed in $it" }

@@ -16,7 +16,7 @@ export default class KomgaTransientBooksService {
         path: path,
       })).data
     } catch (e) {
-      if (e.response.data.message) throw new Error(e.response.data.message)
+      if (e.response?.data?.message) throw new Error(e.response?.data?.message)
       throw new Error('An error occurred while trying to scan for transient book')
     }
   }
@@ -26,8 +26,8 @@ export default class KomgaTransientBooksService {
       return (await this.http.post(`${API_TRANSIENT_BOOKS}/${id}/analyze`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to analyze transient book'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

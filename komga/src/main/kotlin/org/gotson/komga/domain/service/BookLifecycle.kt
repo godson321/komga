@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.gotson.komga.domain.model.Book
 import org.gotson.komga.domain.model.BookAction
 import org.gotson.komga.domain.model.BookWithMedia
+import org.gotson.komga.domain.model.Dimension
 import org.gotson.komga.domain.model.DomainEvent
 import org.gotson.komga.domain.model.HistoricalEvent
 import org.gotson.komga.domain.model.ImageConversionException
@@ -11,6 +12,7 @@ import org.gotson.komga.domain.model.KomgaUser
 import org.gotson.komga.domain.model.MarkSelectedPreference
 import org.gotson.komga.domain.model.Media
 import org.gotson.komga.domain.model.MediaExtensionEpub
+import org.gotson.komga.domain.model.SeriesMetadata
 import org.gotson.komga.domain.model.MediaNotReadyException
 import org.gotson.komga.domain.model.MediaProfile
 import org.gotson.komga.domain.model.NoThumbnailFoundException
@@ -28,10 +30,12 @@ import org.gotson.komga.domain.persistence.LibraryRepository
 import org.gotson.komga.domain.persistence.MediaRepository
 import org.gotson.komga.domain.persistence.ReadListRepository
 import org.gotson.komga.domain.persistence.ReadProgressRepository
+import org.gotson.komga.domain.persistence.SeriesMetadataRepository
 import org.gotson.komga.domain.persistence.ThumbnailBookRepository
 import org.gotson.komga.infrastructure.configuration.KomgaSettingsProvider
 import org.gotson.komga.infrastructure.hash.Hasher
 import org.gotson.komga.infrastructure.hash.KoreaderHasher
+import org.gotson.komga.infrastructure.image.ImageAnalyzer
 import org.gotson.komga.infrastructure.image.ImageConverter
 import org.gotson.komga.infrastructure.image.ImageType
 import org.springframework.beans.factory.annotation.Qualifier
@@ -64,12 +68,14 @@ class BookLifecycle(
   private val libraryRepository: LibraryRepository,
   private val bookAnalyzer: BookAnalyzer,
   private val imageConverter: ImageConverter,
+  private val imageAnalyzer: ImageAnalyzer,
   private val eventPublisher: ApplicationEventPublisher,
   private val transactionTemplate: TransactionTemplate,
   private val hasher: Hasher,
   private val hasherKoreader: KoreaderHasher,
   private val historicalEventRepository: HistoricalEventRepository,
   private val komgaSettingsProvider: KomgaSettingsProvider,
+  private val seriesMetadataRepository: SeriesMetadataRepository,
   @Qualifier("pdfImageType")
   private val pdfImageType: ImageType,
 ) {
@@ -310,6 +316,70 @@ class BookLifecycle(
       }
     }
   }
+
+  fun cropThumbnailAndPersist(book: Book, keepLeft: Boolean) {
+    logger.info { "Crop double-page thumbnail for book: $book, keepLeft=$keepLeft" }
+    try {
+      // skip if the current selected thumbnail is already cropped (height > width)
+      thumbnailBookRepository.findSelectedByBookIdOrNull(book.id)?.let { selected ->
+        if (selected.dimension.height > selected.dimension.width) {
+          logger.info { "Thumbnail already cropped (${selected.dimension.width}x${selected.dimension.height}), skipping" }
+          return
+        }
+      }
+
+      val media = mediaRepository.findById(book.id)
+      val cover = bookAnalyzer.getPoster(BookWithMedia(book, media)) ?: throw NoThumbnailFoundException()
+
+      if (!imageConverter.isDoublePage(cover.bytes)) {
+        logger.info { "Cover is not a double-page spread, skipping crop" }
+        return
+      }
+
+      val croppedBytes = imageConverter.cropDoublePage(cover.bytes, keepLeft)
+      val thumbnail = imageConverter.resizeImageToByteArray(croppedBytes, resizeTargetFormat, komgaSettingsProvider.thumbnailSize.maxEdge)
+
+      addThumbnailForBook(
+        ThumbnailBook(
+          thumbnail = thumbnail,
+          type = ThumbnailBook.Type.GENERATED,
+          bookId = book.id,
+          mediaType = resizeTargetFormat.mediaType,
+          dimension = imageAnalyzer.getDimension(thumbnail.inputStream()) ?: Dimension(0, 0),
+          fileSize = thumbnail.size.toLong(),
+        ),
+        MarkSelectedPreference.YES,
+      )
+    } catch (ex: Exception) {
+      logger.error(ex) { "Error while cropping thumbnail" }
+    }
+  }
+
+  fun restoreThumbnailAndPersist(book: Book) {
+    logger.info { "Restore original (uncropped) thumbnail for book: $book" }
+    try {
+      val media = mediaRepository.findById(book.id)
+      val cover = bookAnalyzer.getPoster(BookWithMedia(book, media)) ?: throw NoThumbnailFoundException()
+      val thumbnail = imageConverter.resizeImageToByteArray(cover.bytes, resizeTargetFormat, komgaSettingsProvider.thumbnailSize.maxEdge)
+
+      addThumbnailForBook(
+        ThumbnailBook(
+          thumbnail = thumbnail,
+          type = ThumbnailBook.Type.GENERATED,
+          bookId = book.id,
+          mediaType = resizeTargetFormat.mediaType,
+          dimension = imageAnalyzer.getDimension(thumbnail.inputStream()) ?: Dimension(0, 0),
+          fileSize = thumbnail.size.toLong(),
+        ),
+        MarkSelectedPreference.YES,
+      )
+    } catch (ex: Exception) {
+      logger.error(ex) { "Error while restoring thumbnail" }
+    }
+  }
+
+  fun findDoublePageThumbnails(): Collection<String> =
+    thumbnailBookRepository.findAllBookIdsByThumbnailTypeAndDimensionWiderThanTall(ThumbnailBook.Type.GENERATED)
 
   fun findBookThumbnailsToRegenerate(forBiggerResultOnly: Boolean): Collection<String> =
     if (forBiggerResultOnly) {

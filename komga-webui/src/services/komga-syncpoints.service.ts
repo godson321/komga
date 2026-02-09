@@ -20,8 +20,8 @@ export default class KomgaSyncPointsService {
       })
     } catch (e) {
       let msg = `An error occurred while trying to delete syncpoints for apikey '${apiKeyId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

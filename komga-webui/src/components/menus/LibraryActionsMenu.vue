@@ -45,7 +45,7 @@
         <v-list-item @click="edit" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.edit') }}</v-list-item-title>
         </v-list-item>
-        <v-list-item @click="showMigratePathDialog = true" v-if="isAdmin">
+        <v-list-item @click="openMigrateDialog" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.migrate_path') }}</v-list-item-title>
         </v-list-item>
         <v-list-item @click="promptDeleteLibrary"
@@ -128,6 +128,11 @@ export default Vue.extend({
     },
     emptyTrash() {
       this.$komgaLibraries.emptyTrash(this.library)
+    },
+    openMigrateDialog() {
+      this.$nextTick(() => {
+        this.showMigratePathDialog = true
+      })
     },
     edit() {
       this.$store.dispatch('dialogEditLibrary', this.library)

@@ -14,8 +14,8 @@ export default class KomgaReleasesService {
       return (await this.http.get(API_RELEASES)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve releases'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

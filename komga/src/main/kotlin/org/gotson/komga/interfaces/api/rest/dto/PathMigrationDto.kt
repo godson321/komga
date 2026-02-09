@@ -4,8 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import org.gotson.komga.domain.service.PathMigrationResult
 
 data class PathMigrationDto(
-  @get:NotBlank
-  val oldPathPrefix: String,
+  val oldPathPrefix: String? = null,
   @get:NotBlank
   val newPathPrefix: String,
 )

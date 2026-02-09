@@ -762,4 +762,62 @@ class BookController(
   ) {
     taskEmitter.findBookThumbnailsToRegenerate(forBiggerResultOnly, LOWEST_PRIORITY)
   }
+
+  @Operation(summary = "Crop double-page book poster", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/{bookId}/thumbnails/crop")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun cropBookThumbnail(
+    @PathVariable bookId: String,
+    @RequestParam(name = "keep_left", required = false) keepLeft: Boolean = true,
+  ) {
+    bookRepository.findByIdOrNull(bookId)?.let {
+      taskEmitter.cropBookThumbnail(bookId, keepLeft, HIGH_PRIORITY)
+    } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+  }
+
+  @Operation(summary = "Restore original (uncropped) book poster", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/{bookId}/thumbnails/restore")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun restoreBookThumbnail(
+    @PathVariable bookId: String,
+  ) {
+    bookRepository.findByIdOrNull(bookId)?.let {
+      taskEmitter.restoreBookThumbnail(bookId, HIGH_PRIORITY)
+    } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+  }
+
+  @Operation(summary = "Crop all double-page book posters", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PutMapping("api/v1/books/thumbnails/crop-double-page")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun cropDoublePageThumbnails() {
+    taskEmitter.cropDoublePageThumbnails(LOWEST_PRIORITY)
+  }
+
+  @Operation(summary = "Crop all book posters in a series", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/crop-series/{seriesId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun cropSeriesBookThumbnails(
+    @PathVariable seriesId: String,
+    @RequestParam(name = "keep_left", required = false) keepLeft: Boolean = true,
+  ) {
+    val bookIds = bookRepository.findAllIdsBySeriesId(seriesId)
+    if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    bookIds.forEach { taskEmitter.cropBookThumbnail(it, keepLeft, HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Restore all book posters in a series", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/restore-series/{seriesId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun restoreSeriesBookThumbnails(
+    @PathVariable seriesId: String,
+  ) {
+    val bookIds = bookRepository.findAllIdsBySeriesId(seriesId)
+    if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    bookIds.forEach { taskEmitter.restoreBookThumbnail(it, HIGH_PRIORITY) }
+  }
 }

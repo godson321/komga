@@ -20,8 +20,8 @@ export default class KomgaHistoryService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve historical events'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

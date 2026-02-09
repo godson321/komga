@@ -15,8 +15,8 @@ export default class KomgaLibrariesService {
       return (await this.http.get(API_LIBRARIES)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve libraries'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -27,8 +27,8 @@ export default class KomgaLibrariesService {
       return (await this.http.get(`${API_LIBRARIES}/${libraryId}`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve library'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -39,8 +39,8 @@ export default class KomgaLibrariesService {
       return (await this.http.post(API_LIBRARIES, library)).data
     } catch (e) {
       let msg = `An error occurred while trying to add library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -51,8 +51,8 @@ export default class KomgaLibrariesService {
       await this.http.patch(`${API_LIBRARIES}/${libraryId}`, library)
     } catch (e) {
       let msg = `An error occurred while trying to update library '${libraryId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -63,8 +63,8 @@ export default class KomgaLibrariesService {
       await this.http.delete(`${API_LIBRARIES}/${library.id}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -77,8 +77,8 @@ export default class KomgaLibrariesService {
       })
     } catch (e) {
       let msg = `An error occurred while trying to scan library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -89,8 +89,8 @@ export default class KomgaLibrariesService {
       await this.http.post(`${API_LIBRARIES}/${library.id}/analyze`)
     } catch (e) {
       let msg = `An error occurred while trying to analyze library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -101,8 +101,8 @@ export default class KomgaLibrariesService {
       await this.http.post(`${API_LIBRARIES}/${library.id}/metadata/refresh`)
     } catch (e) {
       let msg = `An error occurred while trying to refresh metadata for library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -113,8 +113,8 @@ export default class KomgaLibrariesService {
       await this.http.post(`${API_LIBRARIES}/${library.id}/empty-trash`)
     } catch (e) {
       let msg = `An error occurred while trying to empty trash for library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -128,8 +128,8 @@ export default class KomgaLibrariesService {
       })).data
     } catch (e) {
       let msg = `An error occurred while trying to migrate paths for library '${library.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

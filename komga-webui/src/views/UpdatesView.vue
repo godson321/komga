@@ -78,6 +78,7 @@ export default Vue.extend({
         .then(x => this.$store.commit('setActuatorInfo', x))
       this.$komgaReleases.getReleases()
         .then(x => this.$store.commit('setReleases', x))
+        .catch(e => console.warn(e.message))
     },
   },
 })

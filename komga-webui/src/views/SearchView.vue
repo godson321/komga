@@ -444,7 +444,8 @@ export default Vue.extend({
             this.loaderBooks.reload(),
             this.loaderCollections.reload(),
             this.loaderReadLists.reload(),
-          ]).then(() => {
+          ]).catch(e => console.warn(e.message))
+            .finally(() => {
             this.loading = false
           })
         } else {
@@ -453,7 +454,8 @@ export default Vue.extend({
             this.loaderBooks.loadNext(),
             this.loaderCollections.loadNext(),
             this.loaderReadLists.loadNext(),
-          ]).then(() => {
+          ]).catch(e => console.warn(e.message))
+            .finally(() => {
             this.loading = false
           })
         }

@@ -392,6 +392,28 @@
                   </v-col>
                 </v-row>
 
+                <!-- Crop / Restore buttons -->
+                <v-row v-if="single" class="mb-2">
+                  <v-col cols="auto">
+                    <v-btn small @click="cropDoublePageLeft" color="primary">
+                      <v-icon left small>mdi-crop</v-icon>
+                      {{ $t('dialog.edit_books.crop_left_as_cover') }}
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn small @click="cropDoublePageRight" color="primary">
+                      <v-icon left small>mdi-crop</v-icon>
+                      {{ $t('dialog.edit_books.crop_right_as_cover') }}
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn small @click="restoreThumbnail">
+                      <v-icon left small>mdi-restore</v-icon>
+                      {{ $t('dialog.edit_books.restore_thumbnail') }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+
                 <!-- Gallery -->
                 <v-row>
                   <v-col
@@ -764,6 +786,24 @@ export default Vue.extend({
         }
         return true
       } else return false
+    },
+    async cropDoublePageLeft() {
+      if (!this.single) return
+      const book = this.books as BookDto
+      await this.$komgaBooks.cropThumbnail(book.id, true)
+      await this.getThumbnails(book)
+    },
+    async cropDoublePageRight() {
+      if (!this.single) return
+      const book = this.books as BookDto
+      await this.$komgaBooks.cropThumbnail(book.id, false)
+      await this.getThumbnails(book)
+    },
+    async restoreThumbnail() {
+      if (!this.single) return
+      const book = this.books as BookDto
+      await this.$komgaBooks.restoreThumbnail(book.id)
+      await this.getThumbnails(book)
     },
     addThumbnail(files: File[]) {
       let hasSelected = false

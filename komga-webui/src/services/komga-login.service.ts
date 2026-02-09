@@ -16,8 +16,8 @@ export default class KomgaLoginService {
       })
     } catch (e) {
       let msg = 'An error occurred while trying to exchange xAuthToken for session cookie'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

@@ -5,6 +5,36 @@ import org.jreleaser.model.api.common.Apply
 import kotlin.io.path.Path
 import kotlin.io.path.exists
 
+// ==================== 环境依赖校验 ====================
+val javaVersion = JavaVersion.current()
+if (javaVersion < JavaVersion.VERSION_22) {
+  throw GradleException(
+    "当前 Java 版本为 $javaVersion，本项目需要 Java 22+。" +
+      "请安装 JDK 22 或更高版本后重试。"
+  )
+}
+
+val nodeMinVersion = 18
+try {
+  val nodeVersionStr = providers.exec {
+    commandLine("node", "--version")
+  }.standardOutput.asText.get().trim().removePrefix("v")
+  val nodeMajor = nodeVersionStr.split(".").first().toInt()
+  if (nodeMajor < nodeMinVersion) {
+    throw GradleException(
+      "当前 Node.js 版本为 $nodeVersionStr，本项目需要 Node.js $nodeMinVersion+。" +
+        "请升级 Node.js 后重试。"
+    )
+  }
+} catch (e: Exception) {
+  if (e is GradleException) throw e
+  throw GradleException(
+    "未检测到 Node.js，本项目需要 Node.js $nodeMinVersion+。" +
+      "请安装后重试：https://nodejs.org/"
+  )
+}
+// =====================================================
+
 plugins {
   run {
     val kotlinVersion = "2.2.0"

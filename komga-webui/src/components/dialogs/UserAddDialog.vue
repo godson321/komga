@@ -76,7 +76,7 @@
 <script lang="ts">
 import {UserRoles} from '@/types/enum-users'
 import Vue from 'vue'
-import {email, required} from 'vuelidate/lib/validators'
+import {required} from 'vuelidate/lib/validators'
 import {ERROR} from '@/types/events'
 
 export default Vue.extend({
@@ -101,7 +101,7 @@ export default Vue.extend({
   },
   validations: {
     form: {
-      email: {required, email},
+      email: {required},
       password: {required},
     },
   },

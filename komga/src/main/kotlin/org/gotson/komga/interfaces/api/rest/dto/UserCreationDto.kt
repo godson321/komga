@@ -1,11 +1,10 @@
 package org.gotson.komga.interfaces.api.rest.dto
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
 data class UserCreationDto(
-  @get:Email(regexp = ".+@.+\\..+") val email: String,
+  val email: String,
   @get:NotBlank val password: String,
   val roles: List<String> = emptyList(),
   // new fields supported

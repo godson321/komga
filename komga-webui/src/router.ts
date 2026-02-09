@@ -79,6 +79,11 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "dashboard" */ './views/DashboardView.vue'),
         },
         {
+          path: '/dashboard-demo',
+          name: 'dashboard-demo',
+          component: () => import(/* webpackChunkName: "dashboard-demo" */ './views/DashboardDemo.vue'),
+        },
+        {
           path: '/settings/users',
           name: 'settings-users',
           beforeEnter: adminGuard,

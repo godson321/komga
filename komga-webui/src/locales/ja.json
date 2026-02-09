@@ -1,5 +1,6 @@
-{
+﻿{
   "$vuetify": {
+    "badge": "Badge",
     "dataFooter": {
       "pageText": "{2} 件中の {0}〜{1}"
     },

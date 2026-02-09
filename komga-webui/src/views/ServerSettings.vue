@@ -191,6 +191,15 @@
       @confirm="regenerateThumbnails(true)"
       @alternate="regenerateThumbnails(false)"
     />
+
+    <v-row class="mt-4">
+      <v-col cols="auto">
+        <v-btn @click="cropDoublePageThumbnails" color="primary">
+          <v-icon left>mdi-crop</v-icon>
+          {{ $t('server_settings.crop_double_page_thumbnails') }}
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -352,6 +361,9 @@ export default Vue.extend({
     },
     regenerateThumbnails(forBiggerResultOnly: boolean) {
       this.$komgaBooks.regenerateThumbnails(forBiggerResultOnly)
+    },
+    cropDoublePageThumbnails() {
+      this.$komgaBooks.cropDoublePageThumbnails()
     },
   },
 })

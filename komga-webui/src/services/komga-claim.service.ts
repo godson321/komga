@@ -16,7 +16,7 @@ export default class KomgaClaimService {
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve claim status'
       if (e?.response?.data?.message) {
-        msg += `: ${e.response.data.message}`
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -33,7 +33,7 @@ export default class KomgaClaimService {
     } catch (e) {
       let msg = 'An error occurred while trying to claim server'
       if (e?.response?.data?.message) {
-        msg += `: ${e.response.data.message}`
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

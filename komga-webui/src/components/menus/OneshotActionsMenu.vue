@@ -13,6 +13,15 @@
         <v-list-item @click="refreshMetadata" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.refresh_metadata') }}</v-list-item-title>
         </v-list-item>
+        <v-list-item @click="cropThumbnailLeft" v-if="isAdmin && book">
+          <v-list-item-title>{{ $t('menu.crop_left_as_cover') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="cropThumbnailRight" v-if="isAdmin && book">
+          <v-list-item-title>{{ $t('menu.crop_right_as_cover') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="restoreThumbnail" v-if="isAdmin && book">
+          <v-list-item-title>{{ $t('menu.restore_thumbnail') }}</v-list-item-title>
+        </v-list-item>
         <v-list-item @click="addToCollection" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.add_to_collection') }}</v-list-item-title>
         </v-list-item>
@@ -89,6 +98,15 @@ export default Vue.extend({
     refreshMetadata() {
       if (this.book) this.$komgaBooks.refreshMetadata(this.book)
       this.$komgaSeries.refreshMetadata(this.series)
+    },
+    cropThumbnailLeft() {
+      if (this.book) this.$komgaBooks.cropThumbnail(this.book.id, true)
+    },
+    cropThumbnailRight() {
+      if (this.book) this.$komgaBooks.cropThumbnail(this.book.id, false)
+    },
+    restoreThumbnail() {
+      if (this.book) this.$komgaBooks.restoreThumbnail(this.book.id)
     },
     addToCollection() {
       this.$store.dispatch('dialogAddSeriesToCollection', [this.seriesId])

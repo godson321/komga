@@ -17,8 +17,8 @@ export default class KomgaSettingsService {
       return (await this.http.get(API_SETTINGS)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve settings'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -29,8 +29,8 @@ export default class KomgaSettingsService {
       await this.http.patch(API_SETTINGS, settings)
     } catch (e) {
       let msg = 'An error occurred while trying to update settings'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -41,8 +41,8 @@ export default class KomgaSettingsService {
       return (await this.http.get(`${API_CLIENT_SETTINGS}/global/list`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve global client settings'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -53,8 +53,8 @@ export default class KomgaSettingsService {
       return (await this.http.get(`${API_CLIENT_SETTINGS}/user/list`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve user client settings'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -65,8 +65,8 @@ export default class KomgaSettingsService {
       await this.http.patch(`${API_CLIENT_SETTINGS}/global`, settings)
     } catch (e) {
       let msg = 'An error occurred while trying to update global client setting'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -77,8 +77,8 @@ export default class KomgaSettingsService {
       await this.http.patch(`${API_CLIENT_SETTINGS}/user`, settings)
     } catch (e) {
       let msg = 'An error occurred while trying to update user client setting'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -89,8 +89,8 @@ export default class KomgaSettingsService {
       await this.http.delete(`${API_CLIENT_SETTINGS}/user`, {data: settings})
     } catch (e) {
       let msg = 'An error occurred while trying to delete user client setting'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

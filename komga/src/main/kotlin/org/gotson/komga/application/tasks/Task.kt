@@ -242,4 +242,31 @@ sealed class Task(
 
     override fun toString(): String = "FindBookThumbnailsToRegenerate(forBiggerResultOnly='$forBiggerResultOnly', priority='$priority')"
   }
+
+  class CropDoublePageThumbnails(
+    priority: Int = DEFAULT_PRIORITY,
+  ) : Task(priority) {
+    override val uniqueId = "CROP_DOUBLE_PAGE_THUMBNAILS"
+
+    override fun toString(): String = "CropDoublePageThumbnails(priority='$priority')"
+  }
+
+  class CropBookThumbnail(
+    val bookId: String,
+    val keepLeft: Boolean,
+    priority: Int = DEFAULT_PRIORITY,
+  ) : Task(priority) {
+    override val uniqueId = "CROP_BOOK_THUMBNAIL_${bookId}_${keepLeft}"
+
+    override fun toString(): String = "CropBookThumbnail(bookId='$bookId', keepLeft=$keepLeft, priority='$priority')"
+  }
+
+  class RestoreBookThumbnail(
+    val bookId: String,
+    priority: Int = DEFAULT_PRIORITY,
+  ) : Task(priority) {
+    override val uniqueId = "RESTORE_BOOK_THUMBNAIL_$bookId"
+
+    override fun toString(): String = "RestoreBookThumbnail(bookId='$bookId', priority='$priority')"
+  }
 }

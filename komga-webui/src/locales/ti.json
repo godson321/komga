@@ -1,5 +1,6 @@
-{
+﻿{
   "$vuetify": {
+    "badge": "Badge",
     "dataIterator": {
       "loadingText": "ምጽዓን ነገራት...",
       "noResultsText": "መወዳድርቲ ዘይብሉ መዝገብ"

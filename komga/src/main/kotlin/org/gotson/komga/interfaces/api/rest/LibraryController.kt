@@ -299,11 +299,14 @@ class LibraryController(
     @Valid @RequestBody
     migration: PathMigrationDto,
   ): PathMigrationResultDto {
-    libraryRepository.findByIdOrNull(libraryId)
+    val library = libraryRepository.findByIdOrNull(libraryId)
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
 
+    val oldPrefix = migration.oldPathPrefix
+      ?: library.path.toString()
+
     return libraryPathMigrationService
-      .migratePath(libraryId, migration.oldPathPrefix, migration.newPathPrefix)
+      .migratePath(libraryId, oldPrefix, migration.newPathPrefix)
       .toDto()
   }
 }

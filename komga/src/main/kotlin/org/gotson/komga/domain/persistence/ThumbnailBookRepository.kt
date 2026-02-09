@@ -19,6 +19,10 @@ interface ThumbnailBookRepository {
     size: Int,
   ): Collection<String>
 
+  fun findAllBookIdsByThumbnailTypeAndDimensionWiderThanTall(
+    type: ThumbnailBook.Type,
+  ): Collection<String>
+
   fun existsById(thumbnailId: String): Boolean
 
   fun insert(thumbnail: ThumbnailBook)

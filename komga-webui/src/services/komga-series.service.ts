@@ -21,8 +21,8 @@ export default class KomgaSeriesService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve series'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -33,8 +33,8 @@ export default class KomgaSeriesService {
       return (await this.http.post(`${API_SERIES}/list/alphabetical-groups`, search)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve series alphabetical groups'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -51,8 +51,8 @@ export default class KomgaSeriesService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve new series'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -69,8 +69,8 @@ export default class KomgaSeriesService {
       })).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve updated series'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -81,8 +81,8 @@ export default class KomgaSeriesService {
       return (await this.http.get(`${API_SERIES}/${seriesId}`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve series'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -93,8 +93,8 @@ export default class KomgaSeriesService {
       return (await this.http.get(`${API_SERIES}/${seriesId}/collections`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve collections'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -105,8 +105,8 @@ export default class KomgaSeriesService {
       await this.http.post(`${API_SERIES}/${series.id}/analyze`)
     } catch (e) {
       let msg = `An error occurred while trying to analyze series '${series.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -117,8 +117,8 @@ export default class KomgaSeriesService {
       await this.http.post(`${API_SERIES}/${series.id}/metadata/refresh`)
     } catch (e) {
       let msg = `An error occurred while trying to refresh metadata for series '${series.name}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -129,8 +129,8 @@ export default class KomgaSeriesService {
       await this.http.patch(`${API_SERIES}/${seriesId}/metadata`, metadata)
     } catch (e) {
       let msg = 'An error occurred while trying to update series metadata'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -141,8 +141,8 @@ export default class KomgaSeriesService {
       await this.http.post(`${API_SERIES}/${seriesId}/read-progress`)
     } catch (e) {
       let msg = `An error occurred while trying to mark as read for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -153,8 +153,8 @@ export default class KomgaSeriesService {
       await this.http.delete(`${API_SERIES}/${seriesId}/read-progress`)
     } catch (e) {
       let msg = `An error occurred while trying to mark as unread for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -165,8 +165,8 @@ export default class KomgaSeriesService {
       return (await this.http.get(`${API_SERIES}/${seriesId}/thumbnails`)).data
     } catch (e) {
       let msg = `An error occurred while trying to retrieve thumbnails for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -180,8 +180,8 @@ export default class KomgaSeriesService {
       await this.http.post(`${API_SERIES}/${seriesId}/thumbnails`, body)
     } catch (e) {
       let msg = `An error occurred while trying to upload thumbnail for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -192,8 +192,8 @@ export default class KomgaSeriesService {
       await this.http.delete(`${API_SERIES}/${seriesId}/thumbnails/${thumbnailId}`)
     } catch (e) {
       let msg = `An error occurred while trying to delete thumbnail for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -204,8 +204,8 @@ export default class KomgaSeriesService {
       await this.http.put(`${API_SERIES}/${seriesId}/thumbnails/${thumbnailId}/selected`)
     } catch (e) {
       let msg = `An error occurred while trying to mark thumbnail as selected for series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }
@@ -216,8 +216,8 @@ export default class KomgaSeriesService {
       await this.http.delete(`${API_SERIES}/${seriesId}/file`)
     } catch (e) {
       let msg = `An error occurred while trying delete series '${seriesId}'`
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

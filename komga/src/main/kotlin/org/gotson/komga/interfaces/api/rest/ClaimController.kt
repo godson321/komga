@@ -3,7 +3,6 @@ package org.gotson.komga.interfaces.api.rest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import org.gotson.komga.domain.model.KomgaUser
 import org.gotson.komga.domain.model.UserRoles
@@ -36,7 +35,6 @@ class ClaimController(
   @PostMapping
   @Operation(summary = "Claim server", description = "Creates an admin user with the provided credentials.")
   fun claimServer(
-    @Email(regexp = ".+@.+\\..+")
     @RequestHeader("X-Komga-Email")
     email: String,
     @NotBlank

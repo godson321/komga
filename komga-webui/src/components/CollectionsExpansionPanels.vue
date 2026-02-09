@@ -74,14 +74,14 @@ export default Vue.extend({
     async collectionPanel(val) {
       if (val !== undefined) {
         if (!this.collectionsLoaders[val].hasLoadedAny) {
-          this.collectionsLoaders[val].loadNext()
+          this.collectionsLoaders[val].loadNext().catch(e => console.warn(e.message))
         }
       }
     },
   },
   methods: {
     async scrollChanged(loader: PageLoader<any>, percent: number) {
-      if (percent > 0.95) await loader.loadNext()
+      if (percent > 0.95) await loader.loadNext().catch(e => console.warn(e.message))
     },
   },
 })

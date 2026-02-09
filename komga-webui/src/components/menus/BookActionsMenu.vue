@@ -13,6 +13,15 @@
         <v-list-item @click="refreshMetadata" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.refresh_metadata') }}</v-list-item-title>
         </v-list-item>
+        <v-list-item @click="cropThumbnailLeft" v-if="isAdmin">
+          <v-list-item-title>{{ $t('menu.crop_left_as_cover') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="cropThumbnailRight" v-if="isAdmin">
+          <v-list-item-title>{{ $t('menu.crop_right_as_cover') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="restoreThumbnail" v-if="isAdmin">
+          <v-list-item-title>{{ $t('menu.restore_thumbnail') }}</v-list-item-title>
+        </v-list-item>
         <v-list-item @click="addToReadList" v-if="isAdmin">
           <v-list-item-title>{{ $t('menu.add_to_readlist') }}</v-list-item-title>
         </v-list-item>
@@ -74,6 +83,15 @@ export default Vue.extend({
     },
     refreshMetadata () {
       this.$komgaBooks.refreshMetadata(this.book)
+    },
+    cropThumbnailLeft () {
+      this.$komgaBooks.cropThumbnail(this.book.id, true)
+    },
+    cropThumbnailRight () {
+      this.$komgaBooks.cropThumbnail(this.book.id, false)
+    },
+    restoreThumbnail () {
+      this.$komgaBooks.restoreThumbnail(this.book.id)
     },
     addToReadList () {
       this.$store.dispatch('dialogAddBooksToReadList', [this.book.id])

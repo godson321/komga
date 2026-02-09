@@ -70,6 +70,17 @@ class ThumbnailBookDao(
       .and(tb.HEIGHT.lt(size))
       .fetch(tb.BOOK_ID)
 
+  override fun findAllBookIdsByThumbnailTypeAndDimensionWiderThanTall(
+    type: ThumbnailBook.Type,
+  ): Collection<String> =
+    dslRO
+      .select(tb.BOOK_ID)
+      .from(tb)
+      .where(tb.TYPE.eq(type.toString()))
+      .and(tb.SELECTED.isTrue)
+      .and(tb.WIDTH.gt(tb.HEIGHT))
+      .fetch(tb.BOOK_ID)
+
   override fun existsById(thumbnailId: String): Boolean = dslRO.fetchExists(tb, tb.ID.eq(thumbnailId))
 
   override fun insert(thumbnail: ThumbnailBook) {

@@ -78,14 +78,14 @@ export default Vue.extend({
     async readListPanel(val) {
       if (val !== undefined) {
         if (!this.readListsLoaders[val].hasLoadedAny) {
-          this.readListsLoaders[val].loadNext()
+          this.readListsLoaders[val].loadNext().catch(e => console.warn(e.message))
         }
       }
     },
   },
   methods: {
     async scrollChanged(loader: PageLoader<any>, percent: number) {
-      if (percent > 0.95) await loader.loadNext()
+      if (percent > 0.95) await loader.loadNext().catch(e => console.warn(e.message))
     },
   },
 })

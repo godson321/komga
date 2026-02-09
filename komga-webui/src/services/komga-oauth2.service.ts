@@ -15,8 +15,8 @@ export default class KomgaOauth2Service {
       return (await this.http.get(`${API_OAUTH2}/providers`)).data
     } catch (e) {
       let msg = 'An error occurred while trying to retrieve oauth2 providers'
-      if (e.response.data.message) {
-        msg += `: ${e.response.data.message}`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
       }
       throw new Error(msg)
     }

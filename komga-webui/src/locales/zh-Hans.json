@@ -1,5 +1,6 @@
-{
+﻿{
   "$vuetify": {
+    "badge": "Badge",
     "dataFooter": {
       "pageText": "{0}-{1} 或 {2}"
     },
@@ -98,6 +99,7 @@
     "cycling_page_margin": "切换页边距",
     "cycling_scale": "切换缩放",
     "cycling_side_padding": "切换左右边距",
+    "zoom": "缩放",
     "download_current_page": "下载当前页面",
     "end_of_book": "你已经阅读完这本书了。",
     "from_series_metadata": "来自系列元数据",
@@ -167,6 +169,9 @@
       "show_hide_settings": "显示/隐藏设置菜单",
       "show_hide_thumbnails": "显示/隐藏缩略图资源管理器",
       "show_hide_toolbars": "显示/隐藏工具栏",
+      "zoom_in": "放大",
+      "zoom_out": "缩小",
+      "zoom_reset": "重置缩放",
       "vertical": "垂直模式",
       "webtoon": "Webtoon 模式"
     },
@@ -287,7 +292,10 @@
       "FindBooksToConvert": "查找待转换书籍",
       "FindBooksWithMissingPageHash": "查找缺少页面哈希的书籍",
       "FindDuplicatePagesToDelete": "查找待删除重复页",
-      "FindBookThumbnailsToRegenerate": "查找待重新生成的缩略图"
+      "FindBookThumbnailsToRegenerate": "查找待重新生成的缩略图",
+      "CropDoublePageThumbnails": "裁剪双页封面",
+      "CropBookThumbnail": "裁剪书籍封面",
+      "RestoreBookThumbnail": "还原书籍封面"
     },
     "pinned_libraries": "固定库",
     "publisher": "出版商",
@@ -314,12 +322,51 @@
   },
   "dashboard": {
     "keep_reading": "继续阅读",
-    "on_deck": "导航",
+    "on_deck": "待读队列",
     "recently_added_books": "最近添加的书籍",
     "recently_added_series": "最近添加的系列",
     "recently_read_books": "最近阅读的书籍",
     "recently_released_books": "最近发布的书籍",
     "recently_updated_series": "最近更新的系列"
+  },
+  "dashboard_welcome": {
+    "greeting_morning": "早上好",
+    "greeting_afternoon": "下午好",
+    "greeting_evening": "晚上好",
+    "greeting_night": "夜深了",
+    "unread_message": "你有 {count} 本书未读，继续加油！",
+    "streak_days": "连续天数",
+    "weekly_read": "本周阅读"
+  },
+  "dashboard_stats": {
+    "total_series": "系列总数",
+    "total_books": "书籍总数",
+    "books_read": "已读完",
+    "unread": "未读",
+    "libraries": "个库"
+  },
+  "dashboard_activity": {
+    "title": "阅读动态",
+    "streak": "连续 {count} 天",
+    "this_week": "本周 {count} 本",
+    "this_month": "本月 {count} 本",
+    "mon": "一",
+    "tue": "二",
+    "wed": "三",
+    "thu": "四",
+    "fri": "五",
+    "sat": "六",
+    "sun": "日"
+  },
+  "dashboard_quick": {
+    "continue_reading": "继续阅读",
+    "quick_access": "快速访问",
+    "no_in_progress": "暂无正在阅读的书籍",
+    "lib_summary": "{series} 个系列 · {books} 本书",
+    "unread": "未读",
+    "search": "搜索",
+    "collections": "收藏",
+    "readlists": "阅读列表"
   },
   "data_import": {
     "book_number": "书号：{name}",
@@ -469,6 +516,9 @@
       "tab_links": "链接",
       "tab_poster": "海报",
       "tab_tags": "标签",
+      "crop_left_as_cover": "裁剪左边做封面",
+      "crop_right_as_cover": "裁剪右边做封面",
+      "restore_thumbnail": "还原原始封面",
       "tags_notice_multiple_edit": "您正在编辑多本书的标签。这将覆盖每本书的现有标签。"
     },
     "edit_collection": {
@@ -599,6 +649,15 @@
       "body": "默认情况下，媒体服务器不会立即删除媒体信息。如果驱动器暂时断开连接，这会有所帮助。清理垃圾时，所有丢失媒体相关的信息都会被删除。",
       "button_confirm": "清理",
       "title": "清理库垃圾"
+    },
+    "migrate_path": {
+      "title": "迁移库路径",
+      "description": "将此库中的所有路径从一个位置迁移到另一个位置，无需重新分析书籍。当您将库移动到其他驱动器或文件夹时非常有用。",
+      "old_path": "旧路径前缀",
+      "new_path": "新路径前缀",
+      "button_confirm": "迁移",
+      "result": "迁移完成：已更新 {series} 个系列、{books} 本书籍、{sidecars} 个附属文件。",
+      "success": "路径迁移完成：已更新 {series} 个系列、{books} 本书籍。"
     },
     "file_browser": {
       "button_cancel": "取消",
@@ -913,6 +972,7 @@
     "unclaimed_html": "该 Komga 服务器尚未激活，您需要创建一个用户帐户才能访问它。<br><br>选择一个 <strong>邮箱</strong> 和 <strong>密码</strong> 然后点击 <strong>创建账户</strong>。"
   },
   "media_analysis": {
+    "analyze_all": "全部重新分析",
     "comment": "注释",
     "media_analysis": "媒体分析",
     "media_type": "媒体类型",
@@ -933,9 +993,13 @@
     "edit": "编辑",
     "edit_metadata": "编辑元数据",
     "empty_trash": "清理垃圾",
+    "migrate_path": "迁移路径",
     "mark_read": "标记为已读",
     "mark_unread": "标记为未读",
     "pin": "固定",
+    "crop_left_as_cover": "裁剪左边做封面",
+    "crop_right_as_cover": "裁剪右边做封面",
+    "restore_thumbnail": "还原原始封面",
     "refresh_metadata": "刷新元数据",
     "analyze_tooltip": "解析书籍文件结构（格式、页数、尺寸等），完成后自动生成缩略图并刷新元数据",
     "refresh_metadata_tooltip": "从文件内嵌信息（ComicInfo.xml、EPUB OPF 等）提取标题、作者、摘要等元数据，并刷新本地封面",
@@ -1034,6 +1098,7 @@
     "label_task_pool_size": "任务线程",
     "label_thumbnail_size": "缩略图尺寸",
     "requires_restart": "需要重启才能生效",
+    "crop_double_page_thumbnails": "裁剪双页封面",
     "server_settings": "服务器设置"
   },
   "settings_user": {

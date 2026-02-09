@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div :class="`d-flex flex-column px-0 mx-0` "
+    <div :class="`d-flex flex-column px-0 mx-0`"
+         style="max-width: 100vw; overflow-x: hidden;"
          v-scroll="onScroll"
     >
       <img v-for="(page, i) in pages"
@@ -10,7 +11,7 @@
            :height="calcHeight(page)"
            :width="calcWidth(page)"
            :id="`page${page.number}`"
-           :style="`margin: ${i === 0 ? 0 : pageMargin}px auto;`"
+           :style="`margin: ${i === 0 ? 0 : pageMargin}px auto; max-width: 100%;`"
            v-intersect="onIntersect"
       />
     </div>
@@ -64,6 +65,10 @@ export default Vue.extend({
       type: Number,
       required: true,
     },
+    zoom: {
+      type: Number,
+      default: 100,
+    },
   },
   watch: {
     pages: {
@@ -107,6 +112,9 @@ export default Vue.extend({
     totalSidePadding(): number {
       return this.sidePadding * 2
     },
+    zoomFactor(): number {
+      return this.zoom / 100
+    },
   },
   methods: {
     keyPressed: throttle(function (this: any, e: KeyboardEvent) {
@@ -138,23 +146,27 @@ export default Vue.extend({
       return page == 0 || this.seen[page] || Math.abs((this.currentPage - 1) - page) <= 2
     },
     calcHeight(page: PageDtoWithUrl): number | undefined {
+      const z = this.zoomFactor
       switch (this.scale) {
         case ContinuousScaleType.WIDTH:
-          if (page.height && page.width)
-            return page.height / (page.width / (this.$vuetify.breakpoint.width - (this.$vuetify.breakpoint.width * this.totalSidePadding) / 100))
+          if (page.height && page.width) {
+            const baseWidth = this.$vuetify.breakpoint.width - (this.$vuetify.breakpoint.width * this.totalSidePadding) / 100
+            return (page.height / (page.width / baseWidth)) * z
+          }
           return undefined
         case ContinuousScaleType.ORIGINAL:
-          return page.height || undefined
+          return page.height ? page.height * z : undefined
         default:
           return undefined
       }
     },
     calcWidth(page: PageDtoWithUrl): number | undefined {
+      const z = this.zoomFactor
       switch (this.scale) {
         case ContinuousScaleType.WIDTH:
-          return this.$vuetify.breakpoint.width - (this.$vuetify.breakpoint.width * this.totalSidePadding) / 100
+          return (this.$vuetify.breakpoint.width - (this.$vuetify.breakpoint.width * this.totalSidePadding) / 100) * z
         case ContinuousScaleType.ORIGINAL:
-          return page.width || undefined
+          return page.width ? page.width * z : undefined
         default:
           return undefined
       }

@@ -1,21 +1,78 @@
 {
   "$vuetify": {
-    "dataFooter": {
-      "pageText": "{0}-{1} of {2}"
-    },
+    "badge": "Badge",
+    "close": "Close",
     "dataIterator": {
-      "loadingText": "Loading items...",
-      "noResultsText": "No matching records found"
+      "noResultsText": "No matching records found",
+      "loadingText": "Loading items..."
     },
     "dataTable": {
       "itemsPerPageText": "Rows per page:",
+      "ariaLabel": {
+        "sortDescending": "Sorted descending.",
+        "sortAscending": "Sorted ascending.",
+        "sortNone": "Not sorted.",
+        "activateNone": "Activate to remove sorting.",
+        "activateDescending": "Activate to sort descending.",
+        "activateAscending": "Activate to sort ascending."
+      },
       "sortBy": "Sort by"
+    },
+    "dataFooter": {
+      "itemsPerPageText": "Items per page:",
+      "itemsPerPageAll": "All",
+      "nextPage": "Next page",
+      "prevPage": "Previous page",
+      "firstPage": "First page",
+      "lastPage": "Last page",
+      "pageText": "{0}-{1} of {2}"
+    },
+    "datePicker": {
+      "itemsSelected": "{0} selected",
+      "nextMonthAriaLabel": "Next month",
+      "nextYearAriaLabel": "Next year",
+      "prevMonthAriaLabel": "Previous month",
+      "prevYearAriaLabel": "Previous year"
+    },
+    "noDataText": "No data available",
+    "carousel": {
+      "prev": "Previous visual",
+      "next": "Next visual",
+      "ariaLabel": {
+        "delimiter": "Carousel slide {0} of {1}"
+      }
+    },
+    "calendar": {
+      "moreEvents": "{0} more"
+    },
+    "input": {
+      "clear": "Clear {0}",
+      "prependAction": "{0} prepended action",
+      "appendAction": "{0} appended action"
     },
     "fileInput": {
       "counter": "{0} files",
       "counterSize": "{0} files ({1} in total)"
     },
-    "noDataText": "No data available"
+    "timePicker": {
+      "am": "AM",
+      "pm": "PM"
+    },
+    "pagination": {
+      "ariaLabel": {
+        "wrapper": "Pagination Navigation",
+        "next": "Next page",
+        "previous": "Previous page",
+        "page": "Goto Page {0}",
+        "currentPage": "Current Page, Page {0}"
+      }
+    },
+    "rating": {
+      "ariaLabel": {
+        "icon": "Rating {0} of {1}"
+      }
+    },
+    "loading": "Loading..."
   },
   "account_settings": {
     "account_settings": "Account Settings",
@@ -98,6 +155,7 @@
     "cycling_page_margin": "Cycling Page Margin",
     "cycling_scale": "Cycling Scale",
     "cycling_side_padding": "Cycling Side Padding",
+    "zoom": "Zoom",
     "download_current_page": "Download current page",
     "end_of_book": "You've reached the end of the book.",
     "from_series_metadata": "from series metadata",
@@ -167,6 +225,9 @@
       "show_hide_settings": "Show/hide settings menu",
       "show_hide_thumbnails": "Show/hide thumbnails explorer",
       "show_hide_toolbars": "Show/hide toolbars",
+      "zoom_in": "Zoom in",
+      "zoom_out": "Zoom out",
+      "zoom_reset": "Reset zoom",
       "vertical": "Vertical",
       "webtoon": "Webtoon"
     },
@@ -294,6 +355,45 @@
     "recently_read_books": "Recently Read Books",
     "recently_released_books": "Recently Released Books",
     "recently_updated_series": "Recently Updated Series"
+  },
+  "dashboard_welcome": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "greeting_night": "Late night",
+    "unread_message": "You have {count} unread books. Keep going!",
+    "streak_days": "Streak days",
+    "weekly_read": "This week"
+  },
+  "dashboard_stats": {
+    "total_series": "Total Series",
+    "total_books": "Total Books",
+    "books_read": "Books Read",
+    "unread": "Unread",
+    "libraries": "libraries"
+  },
+  "dashboard_activity": {
+    "title": "Reading Activity",
+    "streak": "{count}-day streak",
+    "this_week": "{count} this week",
+    "this_month": "{count} this month",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun"
+  },
+  "dashboard_quick": {
+    "continue_reading": "Continue Reading",
+    "quick_access": "Quick Access",
+    "no_in_progress": "No books in progress",
+    "lib_summary": "{series} series · {books} books",
+    "unread": "unread",
+    "search": "Search",
+    "collections": "Collections",
+    "readlists": "Read Lists"
   },
   "data_import": {
     "book_number": "Book number: {name}",
@@ -443,6 +543,9 @@
       "tab_links": "Links",
       "tab_poster": "Poster",
       "tab_tags": "Tags",
+      "crop_left_as_cover": "Crop left half as cover",
+      "crop_right_as_cover": "Crop right half as cover",
+      "restore_thumbnail": "Restore original thumbnail",
       "tags_notice_multiple_edit": "You are editing tags for multiple books. This will override existing tags of each book."
     },
     "edit_collection": {
@@ -896,6 +999,7 @@
     "unclaimed_html": "This Komga server is not yet active, you need to create a user account to be able to access it.<br/><br/>Choose an <strong>email</strong> and <strong>password</strong> and click on <strong>Create user account</strong>."
   },
   "media_analysis": {
+    "analyze_all": "Analyze all",
     "comment": "Comment",
     "media_analysis": "Media Analysis",
     "media_type": "Media Type",
@@ -920,6 +1024,9 @@
     "mark_read": "Mark as read",
     "mark_unread": "Mark as unread",
     "pin": "Pin",
+    "crop_left_as_cover": "Crop left half as cover",
+    "crop_right_as_cover": "Crop right half as cover",
+    "restore_thumbnail": "Restore original thumbnail",
     "refresh_metadata": "Refresh metadata",
     "analyze_tooltip": "Parses book file structure (format, pages, dimensions, etc.). On success, generates thumbnails and triggers metadata refresh",
     "refresh_metadata_tooltip": "Extracts metadata (title, authors, summary, etc.) from embedded info (ComicInfo.xml, EPUB OPF) and refreshes local artwork",
@@ -1016,6 +1123,7 @@
     "label_task_pool_size": "Task threads",
     "label_thumbnail_size": "Thumbnails size",
     "requires_restart": "Requires restart to take effect",
+    "crop_double_page_thumbnails": "Crop double-page thumbnails",
     "server_settings": "Server Settings"
   },
   "settings_user": {

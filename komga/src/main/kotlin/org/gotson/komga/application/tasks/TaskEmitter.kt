@@ -281,6 +281,36 @@ class TaskEmitter(
     submitTask(Task.FindBookThumbnailsToRegenerate(forBiggerResultOnly, priority))
   }
 
+  fun cropDoublePageThumbnails(
+    priority: Int = DEFAULT_PRIORITY,
+  ) {
+    submitTask(Task.CropDoublePageThumbnails(priority))
+  }
+
+  fun cropBookThumbnail(
+    bookId: String,
+    keepLeft: Boolean,
+    priority: Int = DEFAULT_PRIORITY,
+  ) {
+    submitTask(Task.CropBookThumbnail(bookId, keepLeft, priority))
+  }
+
+  fun cropBookThumbnail(
+    bookIds: Collection<String>,
+    priority: Int = DEFAULT_PRIORITY,
+  ) {
+    bookIds
+      .map { Task.CropBookThumbnail(it, keepLeft = true, priority = priority) }
+      .let { submitTasks(it) }
+  }
+
+  fun restoreBookThumbnail(
+    bookId: String,
+    priority: Int = DEFAULT_PRIORITY,
+  ) {
+    submitTask(Task.RestoreBookThumbnail(bookId, priority))
+  }
+
   private fun submitTask(task: Task) {
     logger.info { "Sending task: $task" }
     tasksRepository.save(task)

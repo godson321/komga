@@ -98,7 +98,7 @@ export default Vue.extend({
   watch: {
     value(val) {
       if (val) {
-        this.oldPathPrefix = ''
+        this.oldPathPrefix = this.library.root
         this.newPathPrefix = ''
         this.result = null
       }
