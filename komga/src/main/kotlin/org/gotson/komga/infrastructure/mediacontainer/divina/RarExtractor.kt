@@ -60,9 +60,19 @@ class RarExtractor(
   override fun getEntryStream(
     path: Path,
     entryName: String,
-  ): ByteArray =
-    Archive(path.toFile()).use { rar ->
+  ): ByteArray {
+    // 1) Primary: 7-Zip CLI
+    try {
+      val seven = SevenZipHelper.extractEntry(path, entryName)
+      if (seven.isNotEmpty()) return seven
+    } catch (t: Throwable) {
+      logger.warn(t) { "getEntryStream: 7z failed" }
+    }
+
+    // 2) Fallback: junrar
+    return Archive(path.toFile()).use { rar ->
       val header = rar.fileHeaders.find { it.fileName == entryName }
       rar.getInputStream(header).use { it.readBytes() }
     }
+  }
 }

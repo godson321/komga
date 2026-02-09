@@ -60,5 +60,16 @@ class ZipExtractor(
   override fun getEntryStream(
     path: Path,
     entryName: String,
-  ): ByteArray = getZipEntryBytes(path, entryName)
+  ): ByteArray {
+    // 1) Primary: 7-Zip CLI
+    try {
+      val seven = SevenZipHelper.extractEntry(path, entryName)
+      if (seven.isNotEmpty()) return seven
+    } catch (t: Throwable) {
+      logger.warn(t) { "getEntryStream: 7z failed" }
+    }
+
+    // 2) Fallback: Apache Commons Compress
+    return getZipEntryBytes(path, entryName)
+  }
 }
