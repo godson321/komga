@@ -2,11 +2,21 @@ import {AxiosInstance} from 'axios'
 
 const API_TASKS = '/api/v1/tasks'
 
+export interface TaskCountDto {
+  count: number
+  countByType: { [key: string]: number }
+}
+
 export default class KomgaTasksService {
   private http: AxiosInstance
 
   constructor(http: AxiosInstance) {
     this.http = http
+  }
+
+  async getTaskCount(): Promise<TaskCountDto> {
+    const response = await this.http.get(`${API_TASKS}/count`)
+    return response.data
   }
 
   async deleteAllTasks(): Promise<number> {

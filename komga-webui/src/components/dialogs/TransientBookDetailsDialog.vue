@@ -39,7 +39,7 @@
               <tr>
                 <td class="font-weight-medium">{{ $t('dialog.transient_book_details.label_format') }}</td>
                 <td :class="rightBook ? 'diff' : ''">{{ getBookFormatFromMediaType(leftBook.mediaType).type }}</td>
-                <td v-if="rightBook">{{ getBookFormatFromMedia(rightBook.media).type }}</td>
+                <td v-if="rightBook">{{ getBookFormatFromMedia(rightBook.media, rightBook.url).type }}</td>
               </tr>
 
               <tr>

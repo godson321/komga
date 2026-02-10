@@ -160,7 +160,7 @@
         :pages="pages"
         :page.sync="page"
         :reading-direction="readingDirection"
-        :page-layout="pageLayout"
+        :page-layout="effectivePageLayout"
         :scale="scale"
         :animations="animations"
         :swipe="swipe"
@@ -371,6 +371,7 @@ import {shortcutsMenus, shortcutsSettings} from '@/functions/shortcuts/bookreade
 import {shortcutsAll} from '@/functions/shortcuts/reader'
 import {shortcutsSettingsContinuous} from '@/functions/shortcuts/continuous-reader'
 import {BookDto, PageDto, PageDtoWithUrl} from '@/types/komga-books'
+import {isPageLandscape} from '@/functions/page'
 import {Context, ContextOrigin} from '@/types/context'
 import {SeriesDto} from '@/types/komga-series'
 import jsFileDownloader from 'js-file-downloader'
@@ -416,8 +417,9 @@ export default Vue.extend({
       showSettings: false,
       showHelp: false,
       goToPage: 1,
+      autoDetectedLayout: PagedReaderLayout.SINGLE_PAGE as PagedReaderLayout,
       settings: {
-        pageLayout: PagedReaderLayout.SINGLE_PAGE,
+        pageLayout: PagedReaderLayout.AUTO,
         swipe: false,
         alwaysFullscreen: false,
         animations: true,
@@ -690,6 +692,12 @@ export default Vue.extend({
         }
       },
     },
+    effectivePageLayout(): PagedReaderLayout {
+      if (this.pageLayout === PagedReaderLayout.AUTO) {
+        return this.autoDetectedLayout
+      }
+      return this.pageLayout
+    },
     pageLayout: {
       get: function (): PagedReaderLayout {
         return this.settings.pageLayout
@@ -780,6 +788,7 @@ export default Vue.extend({
       const pageDtos = (await this.$komgaBooks.getBookPages(bookId))
       pageDtos.forEach((p: any) => p['url'] = this.getPageUrl(p))
       this.pages = pageDtos as PageDtoWithUrl[]
+      this.detectAndApplyPageLayout()
 
       this.$debug('[setup]', `pages count:${this.pagesCount}`, 'read progress:', this.book.readProgress)
       if (page && page >= 1 && page <= this.pagesCount) {
@@ -940,12 +949,54 @@ export default Vue.extend({
       this.zoom = 100
       this.sendNotification(`${this.$t('bookreader.zoom')}: ${this.zoom}%`)
     },
+    async detectAndApplyPageLayout() {
+      if (this.pageLayout !== PagedReaderLayout.AUTO) return
+      this.autoDetectedLayout = await this.detectPageLayout()
+      this.$debug('[detectAndApplyPageLayout]', `result: ${this.autoDetectedLayout}`)
+    },
+    async detectPageLayout(): Promise<PagedReaderLayout> {
+      if (this.pages.length === 0) return PagedReaderLayout.SINGLE_PAGE
+      // 跳过前 5 页（封面、扣页、序言等），采样第 6-10 页的正文
+      const skipCount = Math.min(5, Math.floor(this.pages.length * 0.3))
+      const startIdx = this.pages.length > skipCount + 3 ? skipCount : 0
+      const sampleSize = Math.min(5, this.pages.length - startIdx)
+      const sampled = this.pages.slice(startIdx, startIdx + sampleSize)
+      // 优先用服务端尺寸数据
+      const withServer = sampled.filter((p: PageDtoWithUrl) => p.width && p.height)
+      let dims: { width: number, height: number }[]
+      if (withServer.length >= 3) {
+        dims = withServer.map(p => ({ width: p.width!, height: p.height! }))
+      } else {
+        // 服务端没有尺寸数据，加载图片探测实际尺寸
+        dims = await this.probePageDimensions(sampled)
+      }
+      this.$debug('[detectPageLayout]', `pages[${startIdx}..${startIdx + sampleSize - 1}]`,
+        dims.map(d => `${d.width}x${d.height}`))
+      if (dims.length < 2) return PagedReaderLayout.SINGLE_PAGE
+      const portraitCount = dims.filter(d => d.height > d.width).length
+      this.$debug('[detectPageLayout]', `portrait: ${portraitCount}/${dims.length}`)
+      if (portraitCount / dims.length >= 0.6) return PagedReaderLayout.DOUBLE_PAGES
+      return PagedReaderLayout.SINGLE_PAGE
+    },
+    probePageDimensions(pages: PageDtoWithUrl[]): Promise<{ width: number, height: number }[]> {
+      const promises = pages.map(p => new Promise<{ width: number, height: number } | null>(resolve => {
+        const img = new Image()
+        const timer = setTimeout(() => resolve(null), 8000)
+        img.onload = () => { clearTimeout(timer); resolve({ width: img.naturalWidth, height: img.naturalHeight }) }
+        img.onerror = () => { clearTimeout(timer); resolve(null) }
+        img.src = p.url
+      }))
+      return Promise.all(promises).then(r => r.filter((x): x is { width: number, height: number } => x !== null))
+    },
     cyclePageLayout() {
       if (this.continuousReader) return
       const enumValues = Object.values(PagedReaderLayout)
       const i = (enumValues.indexOf(this.settings.pageLayout) + 1) % (enumValues.length)
       this.pageLayout = enumValues[i]
-      const text = this.$i18n.t(this.pageLayout)
+      let text = this.$i18n.t(this.pageLayout) as string
+      if (this.pageLayout === PagedReaderLayout.AUTO) {
+        text += ` (${this.$i18n.t(this.effectivePageLayout)})`
+      }
       this.sendNotification(`${this.$t('bookreader.cycling_page_layout')}: ${text}`)
     },
     toggleToolbars() {

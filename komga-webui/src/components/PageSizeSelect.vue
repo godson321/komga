@@ -2,7 +2,7 @@
   <v-menu offset-y>
     <template v-slot:activator="{on}">
       <v-btn icon v-on="on">
-        <v-icon>mdi-view-grid-plus</v-icon>
+        <v-icon>mdi-format-list-numbered</v-icon>
       </v-btn>
     </template>
     <v-list :dark="dark">

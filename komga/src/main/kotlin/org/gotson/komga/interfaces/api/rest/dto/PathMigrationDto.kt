@@ -14,6 +14,7 @@ data class PathMigrationResultDto(
   val seriesUpdated: Int,
   val booksUpdated: Int,
   val sidecarsUpdated: Int,
+  val mediaReset: Int,
 )
 
 fun PathMigrationResult.toDto() =
@@ -22,4 +23,5 @@ fun PathMigrationResult.toDto() =
     seriesUpdated = seriesUpdated,
     booksUpdated = booksUpdated,
     sidecarsUpdated = sidecarsUpdated,
+    mediaReset = mediaReset,
   )

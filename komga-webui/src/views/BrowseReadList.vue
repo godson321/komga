@@ -159,20 +159,11 @@
 <script lang="ts">
 import ItemBrowser from '@/components/ItemBrowser.vue'
 import ToolbarSticky from '@/components/bars/ToolbarSticky.vue'
-import {
-  BOOK_CHANGED,
-  BOOK_DELETED,
-  READLIST_CHANGED,
-  READLIST_DELETED,
-  READPROGRESS_CHANGED,
-  READPROGRESS_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import ReadListActionsMenu from '@/components/menus/ReadListActionsMenu.vue'
 import MultiSelectBar from '@/components/bars/MultiSelectBar.vue'
 import {AuthorDto, BookDto, ReadProgressUpdateDto} from '@/types/komga-books'
 import {ContextOrigin} from '@/types/context'
-import {BookSseDto, ReadListSseDto, ReadProgressSseDto} from '@/types/komga-sse'
 import {throttle} from 'lodash'
 import ReadMore from '@/components/ReadMore.vue'
 import FilterDrawer from '@/components/FilterDrawer.vue'
@@ -234,22 +225,6 @@ export default Vue.extend({
       type: String,
       required: true,
     },
-  },
-  created() {
-    this.$eventHub.$on(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$on(READLIST_DELETED, this.readListDeleted)
-    this.$eventHub.$on(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$on(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$on(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_DELETED, this.readProgressChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$off(READLIST_DELETED, this.readListDeleted)
-    this.$eventHub.$off(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$off(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$off(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_DELETED, this.readProgressChanged)
   },
   async mounted() {
     this.pageSize = this.$store.state.persistedState.browsingPageSize || this.pageSize

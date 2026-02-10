@@ -65,11 +65,18 @@ class LibraryContentLifecycle(
   private val thumbnailBookRepository: ThumbnailBookRepository,
   private val eventPublisher: ApplicationEventPublisher,
   private val thumbnailSeriesRepository: ThumbnailSeriesRepository,
+  private val pathMigrationService: LibraryPathMigrationService,
 ) {
   fun scanRootFolder(
     library: Library,
     scanDeep: Boolean = false,
   ) {
+    // consume migration flag: if set, this scan will skip analysis for matched books
+    val pathMigrated = pathMigrationService.consumeMigrationFlag(library.id)
+    if (pathMigrated) {
+      logger.info { "Library ${library.id} was path-migrated, skipping analysis for matched books" }
+    }
+
     logger.info { "Scan root folder for library: $library" }
     measureTime {
       val scanResult =
@@ -170,34 +177,45 @@ class LibraryContentLifecycle(
               existingBooks.find { it.url == newBook.url && it.deletedDate == null }?.let { existingBook ->
                 logger.debug { "Matched existing book: $existingBook" }
                 if (newBook.fileLastModified.notEquals(existingBook.fileLastModified)) {
-                  val hash =
-                    if (existingBook.fileSize == newBook.fileSize && existingBook.fileHash.isNotBlank()) {
-                      hasher.computeHash(newBook.path)
-                    } else {
-                      null
-                    }
-                  if (hash == existingBook.fileHash) {
-                    logger.info { "Book changed on disk, but still has the same hash, no need to reset media status: $existingBook" }
-                    val updatedBook =
+                  if (pathMigrated) {
+                    // Path was migrated: just update timestamp without triggering analysis
+                    logger.info { "Path migrated, updating timestamp without analysis: $existingBook" }
+                    bookRepository.update(
                       existingBook.copy(
                         fileLastModified = newBook.fileLastModified,
                         fileSize = newBook.fileSize,
-                        fileHash = hash,
-                      )
-                    bookRepository.update(updatedBook)
+                      ),
+                    )
                   } else {
-                    logger.info { "Book changed on disk, update and reset media status: $existingBook" }
-                    val updatedBook =
-                      existingBook.copy(
-                        fileLastModified = newBook.fileLastModified,
-                        fileSize = newBook.fileSize,
-                        fileHash = hash ?: "",
-                      )
-                    transactionTemplate.executeWithoutResult {
-                      mediaRepository.findById(existingBook.id).let {
-                        mediaRepository.update(it.copy(status = Media.Status.OUTDATED))
+                    val hash =
+                      if (existingBook.fileSize == newBook.fileSize && existingBook.fileHash.isNotBlank()) {
+                        hasher.computeHash(newBook.path)
+                      } else {
+                        null
                       }
+                    if (hash == existingBook.fileHash) {
+                      logger.info { "Book changed on disk, but still has the same hash, no need to reset media status: $existingBook" }
+                      val updatedBook =
+                        existingBook.copy(
+                          fileLastModified = newBook.fileLastModified,
+                          fileSize = newBook.fileSize,
+                          fileHash = hash,
+                        )
                       bookRepository.update(updatedBook)
+                    } else {
+                      logger.info { "Book changed on disk, update and reset media status: $existingBook" }
+                      val updatedBook =
+                        existingBook.copy(
+                          fileLastModified = newBook.fileLastModified,
+                          fileSize = newBook.fileSize,
+                          fileHash = hash ?: "",
+                        )
+                      transactionTemplate.executeWithoutResult {
+                        mediaRepository.findById(existingBook.id).let {
+                          mediaRepository.update(it.copy(status = Media.Status.OUTDATED))
+                        }
+                        bookRepository.update(updatedBook)
+                      }
                     }
                   }
                 }

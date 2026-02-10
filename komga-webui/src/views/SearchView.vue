@@ -152,31 +152,8 @@ import EmptyState from '@/components/EmptyState.vue'
 import HorizontalScroller from '@/components/HorizontalScroller.vue'
 import ItemBrowser from '@/components/ItemBrowser.vue'
 import {BookDto} from '@/types/komga-books'
-import {
-  BOOK_CHANGED,
-  BOOK_DELETED,
-  COLLECTION_CHANGED,
-  COLLECTION_DELETED,
-  LIBRARY_DELETED,
-  READLIST_CHANGED,
-  READLIST_DELETED,
-  READPROGRESS_CHANGED,
-  READPROGRESS_DELETED,
-  READPROGRESS_SERIES_CHANGED,
-  READPROGRESS_SERIES_DELETED,
-  SERIES_CHANGED,
-  SERIES_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import {Oneshot, SeriesDto} from '@/types/komga-series'
-import {
-  BookSseDto,
-  CollectionSseDto,
-  ReadListSseDto,
-  ReadProgressSeriesSseDto,
-  ReadProgressSseDto,
-  SeriesSseDto,
-} from '@/types/komga-sse'
 import {throttle} from 'lodash'
 import {PageLoader} from '@/types/pageLoader'
 import {ItemContext} from '@/types/items'
@@ -212,36 +189,6 @@ export default Vue.extend({
       selectedCollections: [] as CollectionDto[],
       selectedReadLists: [] as ReadListDto[],
     }
-  },
-  created() {
-    this.$eventHub.$on(LIBRARY_DELETED, this.reloadResults)
-    this.$eventHub.$on(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$on(SERIES_DELETED, this.seriesChanged)
-    this.$eventHub.$on(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$on(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$on(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_DELETED, this.collectionChanged)
-    this.$eventHub.$on(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$on(READLIST_DELETED, this.readListChanged)
-    this.$eventHub.$on(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_SERIES_CHANGED, this.readProgressSeriesChanged)
-    this.$eventHub.$on(READPROGRESS_SERIES_DELETED, this.readProgressSeriesChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(LIBRARY_DELETED, this.reloadResults)
-    this.$eventHub.$off(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$off(SERIES_DELETED, this.seriesChanged)
-    this.$eventHub.$off(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$off(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$off(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_DELETED, this.collectionChanged)
-    this.$eventHub.$off(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$off(READLIST_DELETED, this.readListChanged)
-    this.$eventHub.$off(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_SERIES_CHANGED, this.readProgressSeriesChanged)
-    this.$eventHub.$off(READPROGRESS_SERIES_DELETED, this.readProgressSeriesChanged)
   },
   watch: {
     '$route.query.q': {

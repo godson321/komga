@@ -7,28 +7,14 @@
 import Vue from 'vue'
 import {Theme} from '@/types/themes'
 import {originalDarkColors, oceanColors} from '@/plugins/vuetify'
-import {LIBRARY_ADDED, LIBRARY_CHANGED, LIBRARY_DELETED, SESSION_EXPIRED} from '@/types/events'
-import {LibrarySseDto, SessionExpiredDto} from '@/types/komga-sse'
 
 export default Vue.extend({
   name: 'App',
   created() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.systemThemeChange)
-
-    this.$eventHub.$on(LIBRARY_ADDED, this.reloadLibraries)
-    this.$eventHub.$on(LIBRARY_DELETED, this.reloadLibraries)
-    this.$eventHub.$on(LIBRARY_CHANGED, this.reloadLibraries)
-
-    this.$eventHub.$on(SESSION_EXPIRED, this.logout)
   },
   beforeDestroy() {
     window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', this.systemThemeChange)
-
-    this.$eventHub.$off(LIBRARY_ADDED, this.reloadLibraries)
-    this.$eventHub.$off(LIBRARY_DELETED, this.reloadLibraries)
-    this.$eventHub.$off(LIBRARY_CHANGED, this.reloadLibraries)
-
-    this.$eventHub.$off(SESSION_EXPIRED, this.logout)
   },
   watch: {
     '$store.state.persistedState.locale': {
@@ -86,13 +72,6 @@ export default Vue.extend({
           this.$vuetify.theme.dark = false
           break
       }
-    },
-    reloadLibraries(event: LibrarySseDto) {
-      this.$store.dispatch('getLibraries')
-    },
-    logout(event: SessionExpiredDto) {
-      this.$komgaUsers.logout()
-      this.$router.push({name: 'login'})
     },
   },
 })

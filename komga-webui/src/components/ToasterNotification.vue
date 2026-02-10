@@ -32,9 +32,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {BOOK_IMPORTED, ERROR, ErrorEvent, NOTIFICATION, NotificationEvent} from '@/types/events'
+import {ERROR, ErrorEvent, NOTIFICATION, NotificationEvent} from '@/types/events'
 import {convertErrorCodes} from '@/functions/error-codes'
-import {BookImportSseDto} from '@/types/komga-sse'
 
 export default Vue.extend({
   name: 'ToasterNotification',
@@ -57,12 +56,10 @@ export default Vue.extend({
     }
   },
   created() {
-    this.$eventHub.$on(BOOK_IMPORTED, this.onBookImported)
     this.$eventHub.$on(ERROR, this.onError)
     this.$eventHub.$on(NOTIFICATION, this.onNotification)
   },
   beforeDestroy() {
-    this.$eventHub.$off(BOOK_IMPORTED, this.onBookImported)
     this.$eventHub.$off(ERROR, this.onError)
     this.$eventHub.$off(NOTIFICATION, this.onNotification)
   },
@@ -108,25 +105,6 @@ export default Vue.extend({
         text2: event.text2,
         goTo: event.goTo,
       })
-    },
-    async onBookImported(event: BookImportSseDto) {
-      if (event.success && event.bookId) {
-        const book = await this.$komgaBooks.getBook(event.bookId)
-        this.queue.push({
-          text: this.$t('book_import.notification.import_successful', {book: book.metadata.title}).toString(),
-          text2: this.$t('book_import.notification.source_file', {file: event.sourceFile}).toString(),
-          goTo: {
-            text: this.$t('book_import.notification.go_to_book').toString(),
-            click: () => this.$router.push({name: 'browse-book', params: {bookId: book.id}}),
-          },
-        })
-      } else {
-        this.queue.push({
-          text: this.$t('book_import.notification.import_failure', {file: event.sourceFile}).toString(),
-          text2: convertErrorCodes(event.message || ''),
-          color: 'error',
-        })
-      }
     },
   },
 })

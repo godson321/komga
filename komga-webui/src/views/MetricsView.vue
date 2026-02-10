@@ -1,99 +1,203 @@
 <template>
   <v-container fluid class="pa-6">
-    <v-row>
-      <v-col v-if="tasksCount">
-        <v-card>
-          <v-card-title>{{ $t('metrics.tasks_executed') }}</v-card-title>
-          <v-card-text>
-            <bar-chart :data="tasksCount"/>
-          </v-card-text>
+    <!-- Page Header -->
+    <div class="d-flex align-center mb-5">
+      <v-icon class="mr-2">mdi-chart-box-outline</v-icon>
+      <span class="text-h5 font-weight-bold">{{ $t('metrics.title') }}</span>
+    </div>
+
+    <!-- Overview Stat Cards -->
+    <v-row dense>
+      <v-col cols="6" sm="4" md="2" v-if="booksFileSize">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #1976D2; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#1976D2">mdi-harddisk</v-icon>
+                {{ $t('common.disk_space') }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ getFileSize(booksFileSize.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
 
-      <v-col v-if="tasksTotalTime">
-        <v-card>
-          <v-card-title>{{ $t('metrics.tasks_total_time') }}</v-card-title>
-          <v-card-text>
-            <bar-chart :data="tasksTotalTime" suffix="s" :round="0"/>
-          </v-card-text>
+      <v-col cols="6" sm="4" md="2" v-if="series">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #FF9800; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#FF9800">mdi-book-multiple</v-icon>
+                {{ $tc('common.series', 2) }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ formatNumber(series.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
 
-      <v-col>
-        <v-card>
-          <v-card-title>
-            {{ $t('common.all_libraries') }}
-          </v-card-title>
-          <v-card-text>
-            <v-simple-table>
-              <tbody>
-              <tr v-if="booksFileSize">
-                <td>{{ $t('common.disk_space') }}</td>
-                <td> {{ getFileSize(booksFileSize.measurements[0].value) }}</td>
-              </tr>
-              <tr v-if="series">
-                <td>{{ $tc('common.series', 2) }}</td>
-                <td> {{ series.measurements[0].value }}</td>
-              </tr>
-              <tr v-if="books">
-                <td>{{ $t('common.books') }}</td>
-                <td> {{ books.measurements[0].value }}</td>
-              </tr>
-              <tr v-if="collections">
-                <td>{{ $t('common.collections') }}</td>
-                <td> {{ collections.measurements[0].value }}</td>
-              </tr>
-              <tr v-if="readlists">
-                <td>{{ $t('common.readlists') }}</td>
-                <td> {{ readlists.measurements[0].value }}</td>
-              </tr>
-              <tr v-if="sidecars">
-                <td>{{ $t('common.sidecars') }}</td>
-                <td> {{ sidecars.measurements[0].value }}</td>
-              </tr>
-              </tbody>
-            </v-simple-table>
-          </v-card-text>
+      <v-col cols="6" sm="4" md="2" v-if="books">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #4CAF50; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#4CAF50">mdi-book-open-page-variant</v-icon>
+                {{ $t('common.books') }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ formatNumber(books.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
 
-      <v-col v-if="fileSizeAllTags">
-        <v-card>
-          <v-card-title>{{ $t('metrics.library_disk_space') }}</v-card-title>
-          <v-card-text>
-            <pie-chart :data="fileSizeAllTags" :legend="false" :bytes="true"/>
-          </v-card-text>
+      <v-col cols="6" sm="4" md="2" v-if="collections">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #9C27B0; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#9C27B0">mdi-bookmark-multiple</v-icon>
+                {{ $t('common.collections') }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ formatNumber(collections.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
 
-      <v-col v-if="booksAllTags">
-        <v-card>
-          <v-card-title>{{ $t('metrics.library_books') }}</v-card-title>
-          <v-card-text>
-            <pie-chart :data="booksAllTags" :legend="false"/>
-          </v-card-text>
+      <v-col cols="6" sm="4" md="2" v-if="readlists">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #009688; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#009688">mdi-playlist-play</v-icon>
+                {{ $t('common.readlists') }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ formatNumber(readlists.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
 
-      <v-col v-if="seriesAllTags">
-        <v-card>
-          <v-card-title>{{ $t('metrics.library_series') }}</v-card-title>
-          <v-card-text>
-            <pie-chart :data="seriesAllTags" :legend="false"/>
-          </v-card-text>
+      <v-col cols="6" sm="4" md="2" v-if="sidecars">
+        <v-card class="rounded-lg overflow-hidden" flat outlined style="height: 100%">
+          <div class="d-flex" style="height: 100%">
+            <div style="width: 4px; background: #607D8B; flex-shrink: 0"/>
+            <div class="pa-3">
+              <div class="d-flex align-center text-caption text--secondary mb-1">
+                <v-icon x-small class="mr-1" color="#607D8B">mdi-file-tree</v-icon>
+                {{ $t('common.sidecars') }}
+              </div>
+              <div class="text-h6 font-weight-bold">
+                {{ formatNumber(sidecars.measurements[0].value) }}
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
-
-      <v-col v-if="sidecarsAllTags">
-        <v-card>
-          <v-card-title>{{ $t('metrics.library_sidecars') }}</v-card-title>
-          <v-card-text>
-            <pie-chart :data="sidecarsAllTags" :legend="false"/>
-          </v-card-text>
-        </v-card>
-      </v-col>
-
     </v-row>
+
+    <!-- Library Distribution Section -->
+    <template v-if="fileSizeAllTags || booksAllTags || seriesAllTags || sidecarsAllTags">
+      <v-divider class="my-6"/>
+      <div class="d-flex align-center mb-4">
+        <v-icon small class="mr-2">mdi-chart-donut</v-icon>
+        <span class="text-subtitle-1 font-weight-bold">{{ $t('metrics.library_distribution') }}</span>
+      </div>
+
+      <v-row>
+        <v-col cols="12" sm="6" v-if="fileSizeAllTags">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.library_disk_space') }}
+            </v-card-title>
+            <v-card-text>
+              <pie-chart :data="fileSizeAllTags" :donut="true" :bytes="true" legend="bottom"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" sm="6" v-if="booksAllTags">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.library_books') }}
+            </v-card-title>
+            <v-card-text>
+              <pie-chart :data="booksAllTags" :donut="true" legend="bottom"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" sm="6" v-if="seriesAllTags">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.library_series') }}
+            </v-card-title>
+            <v-card-text>
+              <pie-chart :data="seriesAllTags" :donut="true" legend="bottom"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" sm="6" v-if="sidecarsAllTags">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.library_sidecars') }}
+            </v-card-title>
+            <v-card-text>
+              <pie-chart :data="sidecarsAllTags" :donut="true" legend="bottom"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </template>
+
+    <!-- Task Performance Section -->
+    <template v-if="tasksCount || tasksTotalTime">
+      <v-divider class="my-6"/>
+      <div class="d-flex align-center mb-4">
+        <v-icon small class="mr-2">mdi-chart-bar</v-icon>
+        <span class="text-subtitle-1 font-weight-bold">{{ $t('metrics.task_performance') }}</span>
+      </div>
+
+      <v-row>
+        <v-col cols="12" sm="6" v-if="tasksCount">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.tasks_executed') }}
+            </v-card-title>
+            <v-card-text>
+              <bar-chart :data="tasksCount"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" sm="6" v-if="tasksTotalTime">
+          <v-card class="rounded-lg" flat outlined>
+            <v-card-title class="text-body-2 font-weight-bold">
+              {{ $t('metrics.tasks_total_time') }}
+            </v-card-title>
+            <v-card-text>
+              <bar-chart :data="tasksTotalTime" suffix="s" :round="0"/>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </template>
   </v-container>
 </template>
 
@@ -125,6 +229,13 @@ export default Vue.extend({
     this.loadData()
   },
   methods: {
+    formatNumber(n: number): string {
+      return Math.round(n).toLocaleString()
+    },
+    getTaskTypeName(taskType: string): string {
+      const key = `common.task_type.${taskType}`
+      return this.$te(key) ? this.$t(key) as string : taskType
+    },
     getLibraryNameById(id: string): string {
       return this.$store.getters.getLibraryById(id).name
     },
@@ -132,11 +243,11 @@ export default Vue.extend({
       this.$komgaMetrics.getMetric('komga.tasks.execution')
         .then(m => {
           this.tasks = m
-          this.getStatisticForEachTagValue(m, 'type', 'COUNT')
+          this.getStatisticForEachTagValue(m, 'type', 'COUNT', this.getTaskTypeName)
             .then(m => this.tasksCount = m)
             .catch(() => {
             })
-          this.getStatisticForEachTagValue(m, 'type', 'TOTAL_TIME')
+          this.getStatisticForEachTagValue(m, 'type', 'TOTAL_TIME', this.getTaskTypeName)
             .then(m => this.tasksTotalTime = m)
             .catch(() => {
             })
@@ -199,18 +310,14 @@ export default Vue.extend({
     } | undefined> {
       const tagDto = metric.availableTags.find(x => x.tag === tag)
       if (tagDto) {
-        const tagToStatistic = tagDto.values.reduce((a, b) => {
-          a[b] = 0
-          return a
-        }, {} as { [key: string]: number | undefined })
-
-        for (let tagKey in tagToStatistic) {
-          tagToStatistic[tagTransform(tagKey)] = (await this.$komgaMetrics.getMetric(metric.name, [{
+        const result = {} as { [key: string]: number | undefined }
+        for (const tagValue of tagDto.values) {
+          result[tagTransform(tagValue)] = (await this.$komgaMetrics.getMetric(metric.name, [{
             key: tag,
-            value: tagKey,
+            value: tagValue,
           }])).measurements.find(x => x.statistic === statistic)?.value
         }
-        return this.$_.cloneDeep(tagToStatistic)
+        return result
       }
       return undefined
     },

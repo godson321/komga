@@ -18,6 +18,28 @@
 
       <v-spacer/>
 
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn text v-bind="attrs" v-on="on" class="text-none">
+            {{ sortActiveName }}
+            <v-icon right>{{ sortActive.order === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending' }}</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="s in sortOptions"
+            :key="s.key"
+            @click="toggleSort(s)"
+          >
+            <v-list-item-icon class="mr-3">
+              <v-icon small color="secondary" v-if="s.key === sortActive.key && sortActive.order === 'asc'">mdi-chevron-up</v-icon>
+              <v-icon small color="secondary" v-else-if="s.key === sortActive.key && sortActive.order === 'desc'">mdi-chevron-down</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{ s.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
       <page-size-select v-model="pageSize"/>
 
       <v-btn icon @click="drawer = !drawer">
@@ -61,13 +83,6 @@
         />
       </template>
 
-      <template v-slot:sort>
-        <sort-list
-          :sort-default="sortDefault"
-          :sort-options="sortOptions"
-          :sort-active.sync="sortActive"
-        />
-      </template>
     </filter-drawer>
 
     <v-container fluid>
@@ -125,20 +140,10 @@ import LibraryActionsMenu from '@/components/menus/LibraryActionsMenu.vue'
 import PageSizeSelect from '@/components/PageSizeSelect.vue'
 import {parseQuerySort} from '@/functions/query-params'
 import {MediaProfile, MediaStatus, ReadStatus} from '@/types/enum-books'
-import {
-  BOOK_ADDED,
-  BOOK_CHANGED,
-  BOOK_DELETED,
-  LIBRARY_CHANGED,
-  LIBRARY_DELETED,
-  READPROGRESS_CHANGED,
-  READPROGRESS_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import {Location} from 'vue-router'
 import {LIBRARIES_ALL, LIBRARY_ROUTE} from '@/types/library'
 import FilterDrawer from '@/components/FilterDrawer.vue'
-import SortList from '@/components/SortList.vue'
 import FilterPanels from '@/components/FilterPanels.vue'
 import FilterList from '@/components/FilterList.vue'
 import {
@@ -149,7 +154,6 @@ import {
 } from '@/functions/filter'
 import {GroupCountDto} from '@/types/komga-series'
 import {authorRoles} from '@/types/author-roles'
-import {BookSseDto, LibrarySseDto, ReadProgressSeriesSseDto} from '@/types/komga-sse'
 import {throttle} from 'lodash'
 import {LibraryDto} from '@/types/komga-libraries'
 import {ItemContext} from '@/types/items'
@@ -199,7 +203,6 @@ export default Vue.extend({
     FilterDrawer,
     FilterPanels,
     FilterList,
-    SortList,
   },
   data: function () {
     return {
@@ -238,24 +241,6 @@ export default Vue.extend({
           this.loadLibrary(this.libraryId)
       },
     },
-  },
-  created() {
-    this.$eventHub.$on(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$on(LIBRARY_CHANGED, this.libraryChanged)
-    this.$eventHub.$on(BOOK_ADDED, this.bookChanged)
-    this.$eventHub.$on(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$on(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$on(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_DELETED, this.readProgressChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$off(LIBRARY_CHANGED, this.libraryChanged)
-    this.$eventHub.$off(BOOK_ADDED, this.bookChanged)
-    this.$eventHub.$off(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$off(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$off(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_DELETED, this.readProgressChanged)
   },
   async mounted() {
     this.$store.commit('setLibraryRoute', {id: this.libraryId, route: LIBRARY_ROUTE.BOOKS})
@@ -427,8 +412,19 @@ export default Vue.extend({
     sortOrFilterActive(): boolean {
       return sortOrFilterActive(this.sortActive, this.sortDefault, this.filters)
     },
+    sortActiveName(): string {
+      const found = this.sortOptions.find((s: SortOption) => s.key === this.sortActive.key)
+      return found ? found.name : ''
+    },
   },
   methods: {
+    toggleSort(sort: SortOption) {
+      if (this.sortActive.key === sort.key) {
+        this.sortActive = { key: sort.key, order: this.sortActive.order === 'desc' ? 'asc' : 'desc' }
+      } else {
+        this.sortActive = { key: sort.key, order: 'desc' }
+      }
+    },
     resetSortAndFilters() {
       this.drawer = false
       for (const prop in this.filters) {

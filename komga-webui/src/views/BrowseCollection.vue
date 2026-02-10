@@ -137,14 +137,6 @@
 import CollectionActionsMenu from '@/components/menus/CollectionActionsMenu.vue'
 import ItemBrowser from '@/components/ItemBrowser.vue'
 import ToolbarSticky from '@/components/bars/ToolbarSticky.vue'
-import {
-  COLLECTION_CHANGED,
-  COLLECTION_DELETED,
-  READPROGRESS_SERIES_CHANGED,
-  READPROGRESS_SERIES_DELETED,
-  SERIES_CHANGED,
-  SERIES_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import MultiSelectBar from '@/components/bars/MultiSelectBar.vue'
 import {LIBRARIES_ALL} from '@/types/library'
@@ -159,7 +151,6 @@ import EmptyState from '@/components/EmptyState.vue'
 import {Oneshot, SeriesDto} from '@/types/komga-series'
 import {authorRoles} from '@/types/author-roles'
 import {AuthorDto} from '@/types/komga-books'
-import {CollectionSseDto, ReadProgressSeriesSseDto, SeriesSseDto} from '@/types/komga-sse'
 import {throttle} from 'lodash'
 import {LibraryDto} from '@/types/komga-libraries'
 import {parseBooleanFilter} from '@/functions/query-params'
@@ -214,22 +205,6 @@ export default Vue.extend({
       type: String,
       required: true,
     },
-  },
-  created() {
-    this.$eventHub.$on(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_DELETED, this.collectionDeleted)
-    this.$eventHub.$on(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$on(SERIES_DELETED, this.seriesChanged)
-    this.$eventHub.$on(READPROGRESS_SERIES_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_SERIES_DELETED, this.readProgressChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_DELETED, this.collectionDeleted)
-    this.$eventHub.$off(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$off(SERIES_DELETED, this.seriesChanged)
-    this.$eventHub.$off(READPROGRESS_SERIES_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_SERIES_DELETED, this.readProgressChanged)
   },
   async mounted() {
     this.pageSize = this.$store.state.persistedState.browsingPageSize || this.pageSize

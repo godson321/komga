@@ -158,22 +158,6 @@ import {RawLocation} from 'vue-router'
 import ReadListActionsMenu from '@/components/menus/ReadListActionsMenu.vue'
 import {BookDto} from '@/types/komga-books'
 import {SeriesDto} from '@/types/komga-series'
-import {
-  THUMBNAILBOOK_ADDED,
-  THUMBNAILBOOK_DELETED,
-  THUMBNAILCOLLECTION_ADDED,
-  THUMBNAILCOLLECTION_DELETED,
-  THUMBNAILREADLIST_ADDED,
-  THUMBNAILREADLIST_DELETED,
-  THUMBNAILSERIES_ADDED,
-  THUMBNAILSERIES_DELETED,
-} from '@/types/events'
-import {
-  ThumbnailBookSseDto,
-  ThumbnailCollectionSseDto,
-  ThumbnailReadListSseDto,
-  ThumbnailSeriesSseDto,
-} from '@/types/komga-sse'
 import {coverBase64} from '@/types/image'
 import {ReadListDto} from '@/types/komga-readlists'
 import OneShotActionsMenu from '@/components/menus/OneshotActionsMenu.vue'
@@ -247,32 +231,6 @@ export default Vue.extend({
       thumbnailCacheBust: '',
       coverBase64,
     }
-  },
-  created() {
-    this.$eventHub.$on(THUMBNAILBOOK_ADDED, this.thumbnailBookChanged)
-    this.$eventHub.$on(THUMBNAILBOOK_DELETED, this.thumbnailBookChanged)
-
-    this.$eventHub.$on(THUMBNAILSERIES_ADDED, this.thumbnailSeriesChanged)
-    this.$eventHub.$on(THUMBNAILSERIES_DELETED, this.thumbnailSeriesChanged)
-
-    this.$eventHub.$on(THUMBNAILREADLIST_ADDED, this.thumbnailReadListChanged)
-    this.$eventHub.$on(THUMBNAILREADLIST_DELETED, this.thumbnailReadListChanged)
-
-    this.$eventHub.$on(THUMBNAILCOLLECTION_ADDED, this.thumbnailCollectionChanged)
-    this.$eventHub.$on(THUMBNAILCOLLECTION_DELETED, this.thumbnailCollectionChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(THUMBNAILBOOK_ADDED, this.thumbnailBookChanged)
-    this.$eventHub.$off(THUMBNAILBOOK_DELETED, this.thumbnailBookChanged)
-
-    this.$eventHub.$off(THUMBNAILSERIES_ADDED, this.thumbnailSeriesChanged)
-    this.$eventHub.$off(THUMBNAILSERIES_DELETED, this.thumbnailSeriesChanged)
-
-    this.$eventHub.$off(THUMBNAILREADLIST_ADDED, this.thumbnailReadListChanged)
-    this.$eventHub.$off(THUMBNAILREADLIST_DELETED, this.thumbnailReadListChanged)
-
-    this.$eventHub.$off(THUMBNAILCOLLECTION_ADDED, this.thumbnailCollectionChanged)
-    this.$eventHub.$off(THUMBNAILCOLLECTION_DELETED, this.thumbnailCollectionChanged)
   },
   computed: {
     isStretch(): boolean {

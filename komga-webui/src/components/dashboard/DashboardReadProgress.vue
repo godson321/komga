@@ -17,7 +17,7 @@
             <text x="18" y="17" text-anchor="middle" dominant-baseline="middle"
                   class="donut-text-xl" fill="white">{{ readPercent }}%</text>
             <text x="18" y="23" text-anchor="middle" dominant-baseline="middle"
-                  class="donut-label" fill="rgba(255,255,255,0.6)">已读</text>
+                  class="donut-label" fill="rgba(255,255,255,0.6)">{{ $t('common.read') }}</text>
           </svg>
         </div>
       </div>

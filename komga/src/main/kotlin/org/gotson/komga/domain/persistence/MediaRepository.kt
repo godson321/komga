@@ -29,4 +29,6 @@ interface MediaRepository {
   fun delete(bookIds: Collection<String>)
 
   fun count(): Long
+
+  fun resetOutdatedStatusByLibraryId(libraryId: String): Int
 }

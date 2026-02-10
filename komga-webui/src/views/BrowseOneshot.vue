@@ -368,7 +368,7 @@
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
             </template>
-            <v-chip v-for="(name, i) in authorsByRole[role]"
+            <v-chip v-for="(name, i) in authorsByRole[role].sort()"
                     :key="i"
                     class="me-2"
                     :title="name"
@@ -398,7 +398,7 @@
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
             </template>
-            <v-chip v-for="(t, i) in book.metadata.tags"
+            <v-chip v-for="(t, i) in $_.sortBy(book.metadata.tags)"
                     :key="i"
                     class="me-2"
                     :title="t"
@@ -533,21 +533,6 @@ import {getPagesLeft, getReadProgress, getReadProgressPercentage} from '@/functi
 import {getBookTitleCompact} from '@/functions/book-title'
 import {bookFileUrl, seriesThumbnailUrl} from '@/functions/urls'
 import {MediaStatus, ReadStatus} from '@/types/enum-books'
-import {
-  BOOK_CHANGED,
-  BOOK_DELETED,
-  COLLECTION_ADDED,
-  COLLECTION_CHANGED,
-  COLLECTION_DELETED,
-  LIBRARY_DELETED,
-  READLIST_ADDED,
-  READLIST_CHANGED,
-  READLIST_DELETED,
-  READPROGRESS_CHANGED,
-  READPROGRESS_DELETED,
-  SERIES_CHANGED,
-  SERIES_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import ReadListsExpansionPanels from '@/components/ReadListsExpansionPanels.vue'
 import {BookDto, BookFormat} from '@/types/komga-books'
@@ -557,14 +542,6 @@ import VueHorizontal from 'vue-horizontal'
 import {authorRoles} from '@/types/author-roles'
 import {convertErrorCodes} from '@/functions/error-codes'
 import RtlIcon from '@/components/RtlIcon.vue'
-import {
-  BookSseDto,
-  CollectionSseDto,
-  LibrarySseDto,
-  ReadListSseDto,
-  ReadProgressSseDto,
-  SeriesSseDto,
-} from '@/types/komga-sse'
 import {RawLocation} from 'vue-router/types/router'
 import {ReadListDto} from '@/types/komga-readlists'
 import {Oneshot, SeriesDto} from '@/types/komga-series'
@@ -614,34 +591,6 @@ export default Vue.extend({
   },
   async created() {
     this.loadSeries(this.seriesId)
-    this.$eventHub.$on(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$on(SERIES_DELETED, this.seriesDeleted)
-    this.$eventHub.$on(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$on(BOOK_DELETED, this.bookDeleted)
-    this.$eventHub.$on(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$on(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$on(READLIST_ADDED, this.readListChanged)
-    this.$eventHub.$on(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$on(READLIST_DELETED, this.readListChanged)
-    this.$eventHub.$on(COLLECTION_ADDED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_DELETED, this.collectionChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$off(SERIES_DELETED, this.seriesDeleted)
-    this.$eventHub.$off(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$off(BOOK_DELETED, this.bookDeleted)
-    this.$eventHub.$off(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$off(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$off(READLIST_ADDED, this.readListChanged)
-    this.$eventHub.$off(READLIST_CHANGED, this.readListChanged)
-    this.$eventHub.$off(READLIST_DELETED, this.readListChanged)
-    this.$eventHub.$off(COLLECTION_ADDED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_DELETED, this.collectionChanged)
   },
   props: {
     seriesId: {
@@ -680,7 +629,7 @@ export default Vue.extend({
       return bookFileUrl(this.book.id)
     },
     format(): BookFormat {
-      return getBookFormatFromMedia(this.book.media)
+      return getBookFormatFromMedia(this.book.media, this.book.url)
     },
     authorsByRole(): any {
       return groupAuthorsByRole(this.book.metadata.authors)

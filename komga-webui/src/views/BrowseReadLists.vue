@@ -64,11 +64,9 @@ import ItemBrowser from '@/components/ItemBrowser.vue'
 import LibraryNavigation from '@/components/LibraryNavigation.vue'
 import LibraryActionsMenu from '@/components/menus/LibraryActionsMenu.vue'
 import PageSizeSelect from '@/components/PageSizeSelect.vue'
-import {LIBRARY_CHANGED, READLIST_ADDED, READLIST_CHANGED, READLIST_DELETED} from '@/types/events'
 import Vue from 'vue'
 import {Location} from 'vue-router'
 import {LIBRARIES_ALL, LIBRARY_ROUTE} from '@/types/library'
-import {LibrarySseDto} from '@/types/komga-sse'
 import MultiSelectBar from '@/components/bars/MultiSelectBar.vue'
 import {LibraryDto} from '@/types/komga-libraries'
 import {ReadListDto} from '@/types/komga-readlists'
@@ -108,18 +106,6 @@ export default Vue.extend({
           this.loadLibrary(this.libraryId)
       },
     },
-  },
-  created() {
-    this.$eventHub.$on(READLIST_ADDED, this.reloadElements)
-    this.$eventHub.$on(READLIST_CHANGED, this.reloadElements)
-    this.$eventHub.$on(READLIST_DELETED, this.reloadElements)
-    this.$eventHub.$on(LIBRARY_CHANGED, this.reloadLibrary)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(READLIST_ADDED, this.reloadElements)
-    this.$eventHub.$off(READLIST_CHANGED, this.reloadElements)
-    this.$eventHub.$off(READLIST_DELETED, this.reloadElements)
-    this.$eventHub.$off(LIBRARY_CHANGED, this.reloadLibrary)
   },
   mounted() {
     this.$store.commit('setLibraryRoute', {id: this.libraryId, route: LIBRARY_ROUTE.READLISTS})

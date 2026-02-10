@@ -63,28 +63,24 @@ export default Vue.extend({
   },
   data() {
     return {
-      streak: 5,
-      monthTotal: 47,
+      streak: 0,
     }
   },
   computed: {
     weeklyData(): DayActivity[] {
-      // FORCE MOCK DATA for preview
-      // Remove this condition later when connecting real data
+      // TODO: connect to real reading activity API
       const dayLabels = ['一', '二', '三', '四', '五', '六', '日']
-      const mockCounts = [5, 12, 3, 8, 6, 15, 7] // Static data
       const today = new Date().getDay()
       const todayIndex = today === 0 ? 6 : today - 1
-      
+
       return dayLabels.map((label, i) => ({
         label,
-        count: mockCounts[i],
+        count: 0,
         isToday: i === todayIndex,
       }))
     },
     weekTotal(): number {
-      const total = this.weeklyData.reduce((sum, d) => sum + d.count, 0)
-      return total > 0 ? total : 56 // Fallback mock total
+      return this.weeklyData.reduce((sum, d) => sum + d.count, 0)
     },
     maxCount(): number {
       return Math.max(...this.weeklyData.map(d => d.count), 1)

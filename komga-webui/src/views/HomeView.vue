@@ -14,7 +14,43 @@
         <v-app-bar-nav-icon @click.stop="toggleDrawer"/>
       </v-badge>
 
-      <search-box class="flex-fill"/>
+      <search-box class="flex-fill" style="max-width: calc(100% - 120px)"/>
+
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on">
+            <v-icon>{{ themeIcon }}</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="t in themes"
+            :key="t.value"
+            @click="theme = t.value"
+            :class="{ 'v-list-item--active': theme === t.value }"
+          >
+            <v-list-item-title>{{ t.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu offset-y :max-height="400">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on">
+            <v-icon>mdi-translate</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="l in locales"
+            :key="l.value"
+            @click="locale = l.value"
+            :class="{ 'v-list-item--active': locale === l.value }"
+          >
+            <v-list-item-title>{{ l.text }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
     </v-app-bar>
 
@@ -290,37 +326,6 @@
             <v-list-item-content>
               <v-list-item-title>{{ $t('navigation.logout') }}</v-list-item-title>
             </v-list-item-content>
-          </v-list-item>
-        </v-list>
-
-        <v-divider/>
-
-        <v-list dense class="mt-2">
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>{{ themeIcon }}</v-icon>
-            </v-list-item-icon>
-            <v-select
-              class="py-2"
-              dense
-              v-model="theme"
-              :items="themes"
-              :label="$t('home.theme')"
-            ></v-select>
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-translate</v-icon>
-            </v-list-item-icon>
-            <v-select
-              dense
-              class="py-2"
-              v-model="locale"
-              :items="locales"
-              :label="$t('home.translation')"
-            >
-            </v-select>
           </v-list-item>
         </v-list>
 

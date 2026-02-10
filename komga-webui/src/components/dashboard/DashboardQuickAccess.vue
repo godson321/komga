@@ -143,23 +143,12 @@ export default Vue.extend({
       return this.$store.getters.getLibrariesPinned || []
     },
     continueReadingBooks(): ContinueBook[] {
-      if (this.mockMode) {
-        return [
-          {id: '1', title: '第 42 话', series: '进击的巨人', progress: 65, thumbnailUrl: '', seriesId: '1'},
-          {id: '2', title: 'Vol.8 Ch.71', series: 'ONE PIECE', progress: 30, thumbnailUrl: '', seriesId: '2'},
-          {id: '3', title: '第 15 话', series: '咒术回战', progress: 88, thumbnailUrl: '', seriesId: '3'},
-          {id: '4', title: 'Ch.203', series: '我的英雄学院', progress: 12, thumbnailUrl: '', seriesId: '4'},
-        ]
-      }
+      // TODO: connect to real reading progress API
       return []
     },
     libraryItems(): LibraryItem[] {
-      if (this.mockMode && this.libraries.length === 0) {
-        return [
-          {id: '1', name: '漫画库', icon: 'mdi-book-open-variant', color: LIBRARY_COLORS[0], seriesCount: 128, bookCount: 3456, unreadCount: 42},
-          {id: '2', name: '轻小说', icon: 'mdi-notebook', color: LIBRARY_COLORS[1], seriesCount: 45, bookCount: 890, unreadCount: 15},
-          {id: '3', name: '同人志', icon: 'mdi-palette', color: LIBRARY_COLORS[2], seriesCount: 67, bookCount: 234, unreadCount: 8},
-        ]
+      if (this.libraries.length === 0) {
+        return []
       }
       return this.libraries.map((lib: LibraryDto, index: number) => ({
         id: lib.id,

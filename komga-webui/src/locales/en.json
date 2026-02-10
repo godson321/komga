@@ -166,6 +166,7 @@
     "notification_poster_set_readlist": "Read list poster is now set to the current page.",
     "notification_poster_set_series": "Series poster is now set to the current page.",
     "paged_reader_layout": {
+      "auto": "Auto",
       "double": "Double pages",
       "double_no_cover": "Double pages (no cover)",
       "single": "Single page"
@@ -394,6 +395,36 @@
     "search": "Search",
     "collections": "Collections",
     "readlists": "Read Lists"
+  },
+  "recommendation": {
+    "title": "Recommended for You",
+    "subtitle": "Personalized recommendations based on your reading habits",
+    "keep_reading": "Keep Reading",
+    "keep_reading_desc": "Continue where you left off",
+    "on_deck": "Up Next",
+    "on_deck_desc": "Next unread book in series you're following",
+    "because_you_read": "Because You Read",
+    "because_you_read_desc": "Recommended based on genres you enjoy",
+    "genre_label": "Genre:",
+    "unread_series_unit": "unread series",
+    "almost_complete": "Almost Finished",
+    "almost_complete_desc": "Series you've read more than 70% — just a few more to go!",
+    "books_unit": "books",
+    "remaining": "{n} remaining",
+    "forgotten_reads": "Pick Up Where You Left Off",
+    "forgotten_reads_desc": "Series you started but haven't read in a while",
+    "new_unread": "Newly Added, Unread",
+    "new_unread_desc": "Recently added to your library but not yet started",
+    "favorite_genres": "Browse by Genre",
+    "favorite_genres_desc": "Explore unread series by genre",
+    "favorite_authors": "More from Your Favorite Authors",
+    "favorite_authors_desc": "Other works by authors you've read the most",
+    "series_unit": "series",
+    "complete_binge": "Complete & Ready to Binge",
+    "complete_binge_desc": "Finished series you haven't started — no waiting for updates",
+    "random_discovery": "Random Discovery",
+    "random_discovery_desc": "Random picks from your unread library — surprise yourself",
+    "shuffle": "Shuffle"
   },
   "data_import": {
     "book_number": "Book number: {name}",
@@ -1039,8 +1070,10 @@
   "metrics": {
     "library_books": "Books per library",
     "library_disk_space": "Library disk space",
+    "library_distribution": "Library Distribution",
     "library_series": "Series per library",
     "library_sidecars": "Sidecars per library",
+    "task_performance": "Task Performance",
     "tasks_executed": "Tasks executed",
     "tasks_total_time": "Tasks total time",
     "title": "Metrics"

@@ -14,6 +14,7 @@ export enum ContinuousScaleType {
 }
 
 export enum PagedReaderLayout {
+  AUTO = 'bookreader.paged_reader_layout.auto',
   SINGLE_PAGE = 'bookreader.paged_reader_layout.single',
   DOUBLE_PAGES = 'bookreader.paged_reader_layout.double',
   DOUBLE_NO_COVER = 'bookreader.paged_reader_layout.double_no_cover'

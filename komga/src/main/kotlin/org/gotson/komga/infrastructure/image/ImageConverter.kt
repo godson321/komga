@@ -397,6 +397,116 @@ class ImageConverter(
     return edgeDensity * 3.0 + colorVar * 0.01 + brightnessVar * 0.01
   }
 
+  /**
+   * Detects and crops the cover region from a full wraparound cover scan.
+   *
+   * Full cover scans typically include back cover, spine, front cover, and flaps.
+   * This method detects the left and right boundaries of the actual front cover by finding
+   * strong continuous vertical edges (the cover frame sides). Image height is kept as-is.
+   *
+   * Algorithm:
+   * 1. Downscale for analysis
+   * 2. For each column, count how many rows have a strong horizontal gradient (vertical edge continuity)
+   * 3. Find the strongest left/right boundaries
+   * 4. Crop horizontally, keeping full height
+   *
+   * @param imageBytes the source image bytes
+   * @return the cropped cover region as a byte array (PNG format), or null if no significant border was detected
+   */
+  fun cropCoverRegion(imageBytes: ByteArray): ByteArray? {
+    val original = ImageIO.read(imageBytes.inputStream())
+
+    // downscale for analysis (height = 400px)
+    val analysisHeight = 400
+    val scale = analysisHeight.toDouble() / original.height
+    val analysisWidth = (original.width * scale).roundToInt()
+    val img =
+      BufferedImage(analysisWidth, analysisHeight, BufferedImage.TYPE_INT_RGB).also { scaled ->
+        val g = scaled.createGraphics()
+        g.drawImage(original, 0, 0, analysisWidth, analysisHeight, null)
+        g.dispose()
+      }
+
+    // --- Compute horizontal gradient (detects vertical lines) ---
+    val hEdge = Array(analysisWidth) { DoubleArray(analysisHeight) }
+    for (x in 1 until analysisWidth - 1) {
+      for (y in 1 until analysisHeight - 1) {
+        hEdge[x][y] = abs(getGray(img, x + 1, y) - getGray(img, x - 1, y))
+      }
+    }
+
+    // --- For each column, compute "vertical edge continuity": fraction of rows with strong gradient ---
+    val edgeThreshold = 30.0
+    val columnContinuity = DoubleArray(analysisWidth)
+    for (x in 1 until analysisWidth - 1) {
+      var count = 0
+      for (y in 1 until analysisHeight - 1) {
+        if (hEdge[x][y] > edgeThreshold) count++
+      }
+      columnContinuity[x] = count.toDouble() / analysisHeight
+    }
+    val smoothed = smoothArray(columnContinuity, 3)
+
+    // --- Search for left and right boundaries ---
+    val minContinuity = 0.15
+    val (leftBound, leftVal) = findBoundaryPeak(smoothed, (analysisWidth * 0.05).roundToInt(), (analysisWidth * 0.45).roundToInt())
+    val (rightBound, rightVal) = findBoundaryPeak(smoothed, (analysisWidth * 0.55).roundToInt(), (analysisWidth * 0.95).roundToInt())
+
+    logger.debug { "Cover region peaks: left=$leftBound(${"%.3f".format(leftVal)}), right=$rightBound(${"%.3f".format(rightVal)}) (min=$minContinuity)" }
+
+    // Need at least one strong vertical boundary
+    if (leftVal < minContinuity && rightVal < minContinuity) {
+      logger.debug { "No vertical boundary has continuity >= $minContinuity, no cover frame detected" }
+      return null
+    }
+
+    // Weak boundary falls back to image edge
+    val effectiveLeft = if (leftVal >= minContinuity) leftBound else 0
+    val effectiveRight = if (rightVal >= minContinuity) rightBound else analysisWidth
+
+    // map back to original coordinates, keep full height
+    val origLeft = (effectiveLeft / scale).roundToInt().coerceIn(0, original.width - 1)
+    val origRight = (effectiveRight / scale).roundToInt().coerceIn(origLeft + 1, original.width)
+    val cropWidth = origRight - origLeft
+
+    // check if cropped width is significantly smaller than original (< 85%)
+    val widthRatio = cropWidth.toDouble() / original.width
+    if (widthRatio >= 0.85) {
+      logger.debug { "Cover region width ratio $widthRatio >= 0.85, no significant border detected" }
+      return null
+    }
+
+    logger.info { "Cropping cover region: x=$origLeft..${origRight}, width=${cropWidth} from ${original.width} (width ratio: %.2f)".format(widthRatio) }
+
+    val cropped = original.getSubimage(origLeft, 0, cropWidth, original.height)
+    return ByteArrayOutputStream().use { baos ->
+      ImageIO.write(cropped, "png", baos)
+      baos.toByteArray()
+    }
+  }
+
+  /**
+   * Finds the peak (maximum value) position in the given range of an array.
+   * Used to locate boundary edges in continuity projections.
+   *
+   * @return Pair of (peak index, peak value)
+   */
+  private fun findBoundaryPeak(
+    arr: DoubleArray,
+    searchStart: Int,
+    searchEnd: Int,
+  ): Pair<Int, Double> {
+    var bestIdx = (searchStart + searchEnd) / 2
+    var bestVal = 0.0
+    for (i in searchStart..min(searchEnd, arr.size - 1)) {
+      if (arr[i] > bestVal) {
+        bestVal = arr[i]
+        bestIdx = i
+      }
+    }
+    return Pair(bestIdx, bestVal)
+  }
+
   private fun containsAlphaChannel(image: BufferedImage): Boolean = image.colorModel.hasAlpha()
 
   private fun containsTransparency(image: BufferedImage): Boolean {

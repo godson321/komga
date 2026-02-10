@@ -31,6 +31,28 @@
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
 
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn text v-bind="attrs" v-on="on" class="text-none">
+            {{ sortActiveName }}
+            <v-icon right>{{ sortActive.order === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending' }}</v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="s in sortOptions"
+            :key="s.key"
+            @click="toggleSort(s)"
+          >
+            <v-list-item-icon class="mr-3">
+              <v-icon small color="secondary" v-if="s.key === sortActive.key && sortActive.order === 'asc'">mdi-chevron-up</v-icon>
+              <v-icon small color="secondary" v-else-if="s.key === sortActive.key && sortActive.order === 'desc'">mdi-chevron-down</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>{{ s.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
       <page-size-select v-model="pageSize"/>
 
       <v-btn icon @click="drawer = !drawer">
@@ -72,13 +94,6 @@
         />
       </template>
 
-      <template v-slot:sort>
-        <sort-list
-          :sort-default="sortDefault"
-          :sort-options="sortOptions"
-          :sort-active.sync="sortActive"
-        />
-      </template>
     </filter-drawer>
 
     <v-container fluid class="pa-6">
@@ -511,26 +526,12 @@ import PageSizeSelect from '@/components/PageSizeSelect.vue'
 import {parseQuerySort} from '@/functions/query-params'
 import {seriesFileUrl, seriesThumbnailUrl} from '@/functions/urls'
 import {MediaProfile, ReadStatus} from '@/types/enum-books'
-import {
-  BOOK_ADDED,
-  BOOK_CHANGED,
-  BOOK_DELETED,
-  COLLECTION_ADDED,
-  COLLECTION_CHANGED,
-  COLLECTION_DELETED,
-  LIBRARY_DELETED,
-  READPROGRESS_CHANGED,
-  READPROGRESS_DELETED,
-  SERIES_CHANGED,
-  SERIES_DELETED,
-} from '@/types/events'
 import Vue from 'vue'
 import {Location} from 'vue-router'
 import {BookDto} from '@/types/komga-books'
 import {SeriesStatus} from '@/types/enum-series'
 import FilterDrawer from '@/components/FilterDrawer.vue'
 import FilterList from '@/components/FilterList.vue'
-import SortList from '@/components/SortList.vue'
 import {
   extractFilterOptionsValues,
   mergeFilterParams,
@@ -545,7 +546,6 @@ import {authorRoles, authorRolesSeries} from '@/types/author-roles'
 import VueHorizontal from 'vue-horizontal'
 import RtlIcon from '@/components/RtlIcon.vue'
 import {throttle} from 'lodash'
-import {BookSseDto, CollectionSseDto, LibrarySseDto, ReadProgressSseDto, SeriesSseDto} from '@/types/komga-sse'
 import {ItemContext} from '@/types/items'
 import {Context, ContextOrigin} from '@/types/context'
 import {RawLocation} from 'vue-router/types/router'
@@ -599,7 +599,6 @@ export default Vue.extend({
     FilterDrawer,
     FilterList,
     FilterPanels,
-    SortList,
     ReadMore,
     VueHorizontal,
     RtlIcon,
@@ -778,6 +777,10 @@ export default Vue.extend({
     sortOrFilterActive(): boolean {
       return sortOrFilterActive(this.sortActive, this.sortDefault, this.filters)
     },
+    sortActiveName(): string {
+      const found = this.sortOptions.find((s: SortOption) => s.key === this.sortActive.key)
+      return found ? found.name : ''
+    },
     authorsByRole(): any {
       return groupAuthorsByRole(this.series.booksMetadata.authors)
     },
@@ -806,32 +809,6 @@ export default Vue.extend({
         document.title = `Komga - ${val.metadata.title}`
       }
     },
-  },
-  created() {
-    this.$eventHub.$on(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$on(SERIES_DELETED, this.seriesDeleted)
-    this.$eventHub.$on(BOOK_ADDED, this.bookChanged)
-    this.$eventHub.$on(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$on(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$on(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$on(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$on(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$on(COLLECTION_ADDED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$on(COLLECTION_DELETED, this.collectionChanged)
-  },
-  beforeDestroy() {
-    this.$eventHub.$off(SERIES_CHANGED, this.seriesChanged)
-    this.$eventHub.$off(SERIES_DELETED, this.seriesDeleted)
-    this.$eventHub.$off(BOOK_ADDED, this.bookChanged)
-    this.$eventHub.$off(BOOK_CHANGED, this.bookChanged)
-    this.$eventHub.$off(BOOK_DELETED, this.bookChanged)
-    this.$eventHub.$off(READPROGRESS_CHANGED, this.readProgressChanged)
-    this.$eventHub.$off(READPROGRESS_DELETED, this.readProgressChanged)
-    this.$eventHub.$off(LIBRARY_DELETED, this.libraryDeleted)
-    this.$eventHub.$off(COLLECTION_ADDED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_CHANGED, this.collectionChanged)
-    this.$eventHub.$off(COLLECTION_DELETED, this.collectionChanged)
   },
   async mounted() {
     this.pageSize = this.$store.state.persistedState.browsingPageSize || this.pageSize
@@ -869,6 +846,13 @@ export default Vue.extend({
   methods: {
     getLibraryName(item: SeriesDto): string {
       return this.$store.getters.getLibraryById(item.libraryId).name
+    },
+    toggleSort(sort: SortOption) {
+      if (this.sortActive.key === sort.key) {
+        this.sortActive = { key: sort.key, order: this.sortActive.order === 'desc' ? 'asc' : 'desc' }
+      } else {
+        this.sortActive = { key: sort.key, order: 'desc' }
+      }
     },
     resetSortAndFilters() {
       this.drawer = false
@@ -956,43 +940,6 @@ export default Vue.extend({
 
       this.setWatches()
     },
-    libraryDeleted(event: LibrarySseDto) {
-      if (event.libraryId === this.series.libraryId) {
-        this.$router.push({name: 'home'})
-      }
-    },
-    seriesChanged(event: SeriesSseDto) {
-      if (event.seriesId === this.seriesId)
-        this.$komgaSeries.getOneSeries(this.seriesId)
-          .then(v => this.series = v)
-    },
-    seriesDeleted(event: SeriesSseDto) {
-      if (event.seriesId === this.seriesId) {
-        this.$router.push({name: 'browse-libraries', params: {libraryId: this.series.libraryId}})
-      }
-    },
-    bookChanged(event: BookSseDto) {
-      if (event.seriesId === this.seriesId) this.reloadPage()
-    },
-    readProgressChanged(event: ReadProgressSseDto) {
-      if (this.books.some(b => b.id === event.bookId)) {
-        this.reloadPage()
-        this.reloadSeries()
-      }
-    },
-    collectionChanged(event: CollectionSseDto) {
-      if (event.seriesIds.includes(this.seriesId) || this.collections.map(x => x.id).includes(event.collectionId)) {
-        this.$komgaSeries.getCollections(this.seriesId)
-          .then(v => this.collections = v)
-      }
-    },
-    reloadPage: throttle(function (this: any) {
-      this.loadPage(this.seriesId, this.page, this.sortActive)
-    }, 1000),
-    reloadSeries: throttle(function (this: any) {
-      this.$komgaSeries.getOneSeries(this.seriesId)
-        .then((v: SeriesDto) => this.series = v)
-    }, 1000),
     async loadSeries(seriesId: string) {
       this.$komgaSeries.getOneSeries(seriesId)
         .then(v => {

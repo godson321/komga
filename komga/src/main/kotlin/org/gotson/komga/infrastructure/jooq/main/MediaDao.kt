@@ -289,6 +289,15 @@ class MediaDao(
 
   override fun count(): Long = dslRO.fetchCount(m).toLong()
 
+  override fun resetOutdatedStatusByLibraryId(libraryId: String): Int =
+    dslRW
+      .update(m)
+      .set(m.STATUS, Media.Status.READY.name)
+      .set(m.LAST_MODIFIED_DATE, LocalDateTime.now(ZoneId.of("Z")))
+      .where(m.STATUS.eq(Media.Status.OUTDATED.name))
+      .and(m.BOOK_ID.`in`(DSL.select(b.ID).from(b).where(b.LIBRARY_ID.eq(libraryId))))
+      .execute()
+
   private fun MediaRecord.toDomain(
     pages: List<BookPage>,
     files: List<MediaFile>,
