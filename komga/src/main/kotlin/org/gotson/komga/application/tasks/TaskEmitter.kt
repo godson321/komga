@@ -290,9 +290,10 @@ class TaskEmitter(
   fun cropBookThumbnail(
     bookId: String,
     keepLeft: Boolean,
+    manualCrop: Boolean = false,
     priority: Int = DEFAULT_PRIORITY,
   ) {
-    submitTask(Task.CropBookThumbnail(bookId, keepLeft, priority))
+    submitTask(Task.CropBookThumbnail(bookId, keepLeft, manualCrop, priority))
   }
 
   fun cropBookThumbnail(
@@ -300,7 +301,7 @@ class TaskEmitter(
     priority: Int = DEFAULT_PRIORITY,
   ) {
     bookIds
-      .map { Task.CropBookThumbnail(it, keepLeft = true, priority = priority) }
+      .map { Task.CropBookThumbnail(it, keepLeft = true, manualCrop = false, priority = priority) }
       .let { submitTasks(it) }
   }
 

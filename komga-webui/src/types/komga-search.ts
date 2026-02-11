@@ -205,7 +205,8 @@ export interface AuthorMatch {
 
 export interface PosterMatch {
   type?: PosterMatchType,
-  selected?: boolean
+  selected?: boolean,
+  doublePage?: boolean,
 }
 
 export enum PosterMatchType {

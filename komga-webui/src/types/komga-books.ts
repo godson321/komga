@@ -151,4 +151,5 @@ export interface BookThumbnailDto {
   fileSize: number,
   width: number,
   height: number,
+  manualCrop: boolean,
 }

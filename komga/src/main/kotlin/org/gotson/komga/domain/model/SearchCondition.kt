@@ -172,6 +172,7 @@ class SearchCondition {
   data class PosterMatch(
     val type: Type? = null,
     val selected: Boolean? = null,
+    val doublePage: Boolean? = null,
   ) {
     enum class Type {
       GENERATED,

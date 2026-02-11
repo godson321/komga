@@ -52,9 +52,9 @@
         <!-- Welcome Banner -->
         <v-col cols="12" sm="6" lg="3">
           <dashboard-welcome-banner
-            :unread-count="mockStats.bookCount - mockStats.readCount"
-            :streak="mockStats.streak"
-            :weekly-read="mockStats.weeklyRead"
+            :unread-count="stats.bookCount - stats.readCount"
+            :streak="stats.streak"
+            :weekly-read="stats.weeklyRead"
             style="height: 180px"
           />
         </v-col>
@@ -63,8 +63,8 @@
         <v-col cols="12" sm="6" lg="3">
           <dashboard-stat-card
             style="height: 180px"
-            :series-count="mockStats.seriesCount"
-            :book-count="mockStats.bookCount"
+            :series-count="stats.seriesCount"
+            :book-count="stats.bookCount"
           />
         </v-col>
 
@@ -72,8 +72,8 @@
         <v-col cols="12" sm="6" lg="3">
           <dashboard-read-progress
             style="height: 180px"
-            :book-count="mockStats.bookCount"
-            :read-count="mockStats.readCount"
+            :book-count="stats.bookCount"
+            :read-count="stats.readCount"
           />
         </v-col>
 
@@ -181,6 +181,7 @@ import {
   SearchConditionSeriesId,
   SearchOperatorAfter,
   SearchOperatorIs,
+  SeriesSearch,
 } from '@/types/komga-search'
 import {
   CLIENT_SETTING,
@@ -235,8 +236,7 @@ export default Vue.extend({
       loaderRecentlyReadBooks: undefined as PageLoader<BookDto> | undefined,
       selectedSeries: [] as SeriesDto[],
       selectedBooks: [] as BookDto[],
-      // TODO: replace with real API data when stats endpoint is available
-      mockStats: {
+      stats: {
         libraryCount: 0,
         seriesCount: 0,
         bookCount: 0,
@@ -253,6 +253,7 @@ export default Vue.extend({
     })
     this.setupLoaders(this.libraryId)
     this.loadAll()
+    this.loadStats()
   },
   props: {
     libraryId: {
@@ -264,6 +265,7 @@ export default Vue.extend({
     libraryIds() {
       this.setupLoaders(this.libraryId)
       this.loadAll()
+      this.loadStats()
     },
     '$store.state.komgaLibraries.libraries': {
       handler(val) {
@@ -337,6 +339,38 @@ export default Vue.extend({
     },
   },
   methods: {
+    async loadStats() {
+      try {
+        const libraryIds = this.getRequestLibraryId(this.libraryId)
+        const baseBookConditions = [] as SearchConditionBook[]
+        if (this.individualLibrary) {
+          baseBookConditions.push(new SearchConditionAnyOfSeries(
+            libraryIds.map((it: string) => new SearchConditionLibraryId(new SearchOperatorIs(it))),
+          ))
+        }
+
+        const [allBooks, readBooks, allSeries] = await Promise.all([
+          this.$komgaBooks.getBooksList({
+            condition: baseBookConditions.length > 0 ? new SearchConditionAllOfBook(baseBookConditions) : undefined,
+          } as BookSearch, {size: 0} as PageRequest),
+          this.$komgaBooks.getBooksList({
+            condition: new SearchConditionAllOfBook([...baseBookConditions, new SearchConditionReadStatus(new SearchOperatorIs(ReadStatus.READ))]),
+          } as BookSearch, {size: 0} as PageRequest),
+          this.$komgaSeries.getSeriesList({
+            condition: baseBookConditions.length > 0
+              ? new SearchConditionAnyOfSeries(libraryIds.map((it: string) => new SearchConditionLibraryId(new SearchOperatorIs(it))))
+              : undefined,
+          } as SeriesSearch, {size: 0} as PageRequest),
+        ])
+
+        this.stats.bookCount = allBooks.totalElements
+        this.stats.readCount = readBooks.totalElements
+        this.stats.seriesCount = allSeries.totalElements
+        this.stats.libraryCount = this.$store.getters.getLibraries.length
+      } catch (e) {
+        console.warn('Failed to load dashboard stats:', e.message)
+      }
+    },
     async resetDefaultView() {
       await this.$komgaSettings.deleteClientSettingUser([this.settingsKey])
       await this.$store.dispatch('getClientSettingsUser')

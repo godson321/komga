@@ -204,6 +204,10 @@
               <v-list-item-title>{{ $t('missing_posters.title') }}</v-list-item-title>
             </v-list-item>
 
+            <v-list-item :to="{name: 'cover-crop'}">
+              <v-list-item-title>{{ $t('cover_crop.title') }}</v-list-item-title>
+            </v-list-item>
+
             <v-list-item :to="{name: 'duplicate-files'}">
               <v-list-item-title>{{ $t('duplicates.title') }}</v-list-item-title>
             </v-list-item>
@@ -441,10 +445,10 @@ export default Vue.extend({
   },
   computed: {
     taskCount(): number {
-      return this.$store.state.komgaSse.taskCount
+      return this.$store.state.komgaTasks.taskCount
     },
     taskCountByType(): { [key: string]: number } {
-      return this.$store.state.komgaSse.taskCountByType
+      return this.$store.state.komgaTasks.taskCountByType
     },
     libraries(): LibraryDto[] {
       return this.$store.getters.getLibraries

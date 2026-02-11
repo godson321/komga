@@ -134,6 +134,12 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "missing-posters" */ './views/MissingPosters.vue'),
         },
         {
+          path: '/media-management/cover-crop',
+          name: 'cover-crop',
+          beforeEnter: adminGuard,
+          component: () => import(/* webpackChunkName: "cover-crop" */ './views/CoverCropManagement.vue'),
+        },
+        {
           path: '/media-management/duplicate-files',
           name: 'duplicate-files',
           beforeEnter: adminGuard,

@@ -210,7 +210,7 @@ class BookSearchHelper(
 
       is SearchCondition.Poster ->
         Tables.BOOK.ID.let { field ->
-          val inner = { type: SearchCondition.PosterMatch.Type?, selected: Boolean? ->
+          val inner = { type: SearchCondition.PosterMatch.Type?, selected: Boolean?, doublePage: Boolean? ->
             DSL
               .select(Tables.THUMBNAIL_BOOK.BOOK_ID)
               .from(Tables.THUMBNAIL_BOOK)
@@ -222,21 +222,28 @@ class BookSearchHelper(
                   and(Tables.THUMBNAIL_BOOK.SELECTED.isTrue)
                 if (selected != null && !selected)
                   and(Tables.THUMBNAIL_BOOK.SELECTED.isFalse)
+                if (doublePage != null && doublePage)
+                  and(Tables.THUMBNAIL_BOOK.WIDTH.gt(Tables.THUMBNAIL_BOOK.HEIGHT))
+                if (doublePage != null && !doublePage)
+                  and(Tables.THUMBNAIL_BOOK.WIDTH.le(Tables.THUMBNAIL_BOOK.HEIGHT))
               }
           }
           when (searchCondition.operator) {
             is SearchOperator.Is -> {
-              if (searchCondition.operator.value.type == null && searchCondition.operator.value.selected == null)
+              val v = searchCondition.operator.value
+              if (v.type == null && v.selected == null && v.doublePage == null)
                 DSL.noCondition()
               else
-                field.`in`(inner(searchCondition.operator.value.type, searchCondition.operator.value.selected))
+                field.`in`(inner(v.type, v.selected, v.doublePage))
             }
 
-            is SearchOperator.IsNot ->
-              if (searchCondition.operator.value.type == null && searchCondition.operator.value.selected == null)
+            is SearchOperator.IsNot -> {
+              val v = searchCondition.operator.value
+              if (v.type == null && v.selected == null && v.doublePage == null)
                 DSL.noCondition()
               else
-                field.notIn(inner(searchCondition.operator.value.type, searchCondition.operator.value.selected))
+                field.notIn(inner(v.type, v.selected, v.doublePage))
+            }
           } to emptySet()
         }
 

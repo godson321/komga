@@ -161,7 +161,11 @@ class BookLifecycle(
   fun generateThumbnailAndPersist(book: Book) {
     logger.info { "Generate thumbnail and persist for book: $book" }
     try {
-      addThumbnailForBook(bookAnalyzer.generateThumbnail(BookWithMedia(book, mediaRepository.findById(book.id))), MarkSelectedPreference.IF_NONE_OR_GENERATED)
+      val markSelected =
+        thumbnailBookRepository.findSelectedByBookIdOrNull(book.id)?.let {
+          if (it.manualCrop) MarkSelectedPreference.NO else MarkSelectedPreference.IF_NONE_OR_GENERATED
+        } ?: MarkSelectedPreference.IF_NONE_OR_GENERATED
+      addThumbnailForBook(bookAnalyzer.generateThumbnail(BookWithMedia(book, mediaRepository.findById(book.id))), markSelected)
     } catch (ex: NoThumbnailFoundException) {
       logger.error { "Error while creating thumbnail" }
     } catch (ex: Exception) {
@@ -317,8 +321,8 @@ class BookLifecycle(
     }
   }
 
-  fun cropThumbnailAndPersist(book: Book, keepLeft: Boolean) {
-    logger.info { "Crop double-page thumbnail for book: $book, keepLeft=$keepLeft" }
+  fun cropThumbnailAndPersist(book: Book, keepLeft: Boolean, manualCrop: Boolean = false) {
+    logger.info { "Crop double-page thumbnail for book: $book, keepLeft=$keepLeft, manualCrop=$manualCrop" }
     try {
       // skip if the current selected thumbnail is already cropped (height > width)
       thumbnailBookRepository.findSelectedByBookIdOrNull(book.id)?.let { selected ->
@@ -347,6 +351,7 @@ class BookLifecycle(
           mediaType = resizeTargetFormat.mediaType,
           dimension = imageAnalyzer.getDimension(thumbnail.inputStream()) ?: Dimension(0, 0),
           fileSize = thumbnail.size.toLong(),
+          manualCrop = manualCrop,
         ),
         MarkSelectedPreference.YES,
       )
@@ -378,8 +383,11 @@ class BookLifecycle(
     }
   }
 
-  fun findDoublePageThumbnails(): Collection<String> =
-    thumbnailBookRepository.findAllBookIdsByThumbnailTypeAndDimensionWiderThanTall(ThumbnailBook.Type.GENERATED)
+  fun findDoublePageThumbnails(): Collection<String> {
+    val manualCropBookIds = thumbnailBookRepository.findAllBookIdsWithSelectedManualCrop()
+    return thumbnailBookRepository.findAllBookIdsByThumbnailTypeAndDimensionWiderThanTall(ThumbnailBook.Type.GENERATED)
+      .filterNot { it in manualCropBookIds }
+  }
 
   fun findBookThumbnailsToRegenerate(forBiggerResultOnly: Boolean): Collection<String> =
     if (forBiggerResultOnly) {

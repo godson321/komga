@@ -11,6 +11,7 @@ data class ThumbnailBookDto(
   val fileSize: Long,
   val width: Int,
   val height: Int,
+  val manualCrop: Boolean,
 )
 
 fun ThumbnailBook.toDto() =
@@ -23,4 +24,5 @@ fun ThumbnailBook.toDto() =
     fileSize = fileSize,
     width = dimension.width,
     height = dimension.height,
+    manualCrop = manualCrop,
   )

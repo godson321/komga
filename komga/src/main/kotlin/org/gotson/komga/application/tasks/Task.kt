@@ -254,11 +254,12 @@ sealed class Task(
   class CropBookThumbnail(
     val bookId: String,
     val keepLeft: Boolean,
+    val manualCrop: Boolean = false,
     priority: Int = DEFAULT_PRIORITY,
   ) : Task(priority) {
     override val uniqueId = "CROP_BOOK_THUMBNAIL_${bookId}_${keepLeft}"
 
-    override fun toString(): String = "CropBookThumbnail(bookId='$bookId', keepLeft=$keepLeft, priority='$priority')"
+    override fun toString(): String = "CropBookThumbnail(bookId='$bookId', keepLeft=$keepLeft, manualCrop=$manualCrop, priority='$priority')"
   }
 
   class RestoreBookThumbnail(

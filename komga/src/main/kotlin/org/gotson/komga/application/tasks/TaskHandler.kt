@@ -188,7 +188,7 @@ class TaskHandler(
 
           is Task.CropBookThumbnail ->
             bookRepository.findByIdOrNull(task.bookId)?.let { book ->
-              bookLifecycle.cropThumbnailAndPersist(book, task.keepLeft)
+              bookLifecycle.cropThumbnailAndPersist(book, task.keepLeft, task.manualCrop)
             } ?: logger.warn { "Cannot execute task $task: Book does not exist" }
 
           is Task.RestoreBookThumbnail ->

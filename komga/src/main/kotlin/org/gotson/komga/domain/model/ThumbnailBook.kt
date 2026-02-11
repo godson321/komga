@@ -14,6 +14,7 @@ data class ThumbnailBook(
   val mediaType: String,
   val fileSize: Long,
   val dimension: Dimension,
+  val manualCrop: Boolean = false,
   val id: String = TsidCreator.getTsid256().toString(),
   val bookId: String = "",
   override val createdDate: LocalDateTime = LocalDateTime.now(),
@@ -47,6 +48,7 @@ data class ThumbnailBook(
     if (mediaType != other.mediaType) return false
     if (fileSize != other.fileSize) return false
     if (dimension != other.dimension) return false
+    if (manualCrop != other.manualCrop) return false
     if (id != other.id) return false
     if (bookId != other.bookId) return false
     if (createdDate != other.createdDate) return false
@@ -63,6 +65,7 @@ data class ThumbnailBook(
     result = 31 * result + mediaType.hashCode()
     result = 31 * result + fileSize.hashCode()
     result = 31 * result + dimension.hashCode()
+    result = 31 * result + manualCrop.hashCode()
     result = 31 * result + id.hashCode()
     result = 31 * result + bookId.hashCode()
     result = 31 * result + createdDate.hashCode()

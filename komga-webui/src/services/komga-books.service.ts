@@ -382,4 +382,66 @@ export default class KomgaBooksService {
       throw new Error(msg)
     }
   }
+
+  async cropBatchThumbnails(bookIds: string[], keepLeft: boolean, manualCrop: boolean = true) {
+    try {
+      await this.http.post(`${API_BOOKS}/thumbnails/crop-batch`, {bookIds, keepLeft, manualCrop})
+    } catch (e) {
+      let msg = 'An error occurred while trying to batch crop thumbnails'
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
+      }
+      throw new Error(msg)
+    }
+  }
+
+  async restoreBatchThumbnails(bookIds: string[]) {
+    try {
+      await this.http.post(`${API_BOOKS}/thumbnails/restore-batch`, {bookIds})
+    } catch (e) {
+      let msg = 'An error occurred while trying to batch restore thumbnails'
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
+      }
+      throw new Error(msg)
+    }
+  }
+
+  async cropLibraryThumbnails(libraryId: string, keepLeft: boolean) {
+    try {
+      await this.http.put(`${API_BOOKS}/thumbnails/crop-library/${libraryId}`, null, {
+        params: { keep_left: keepLeft },
+      })
+    } catch (e) {
+      let msg = `An error occurred while trying to crop thumbnails for library '${libraryId}'`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
+      }
+      throw new Error(msg)
+    }
+  }
+
+  async restoreLibraryThumbnails(libraryId: string) {
+    try {
+      await this.http.post(`${API_BOOKS}/thumbnails/restore-library/${libraryId}`)
+    } catch (e) {
+      let msg = `An error occurred while trying to restore thumbnails for library '${libraryId}'`
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
+      }
+      throw new Error(msg)
+    }
+  }
+
+  async restoreAllThumbnails() {
+    try {
+      await this.http.post(`${API_BOOKS}/thumbnails/restore-all`)
+    } catch (e) {
+      let msg = 'An error occurred while trying to restore all thumbnails'
+      if (e.response?.data?.message) {
+        msg += `: ${e.response?.data?.message}`
+      }
+      throw new Error(msg)
+    }
+  }
 }

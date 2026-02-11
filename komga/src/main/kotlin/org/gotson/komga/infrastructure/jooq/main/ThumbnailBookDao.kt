@@ -81,6 +81,14 @@ class ThumbnailBookDao(
       .and(tb.WIDTH.gt(tb.HEIGHT))
       .fetch(tb.BOOK_ID)
 
+  override fun findAllBookIdsWithSelectedManualCrop(): Collection<String> =
+    dslRO
+      .select(tb.BOOK_ID)
+      .from(tb)
+      .where(tb.SELECTED.isTrue)
+      .and(tb.MANUAL_CROP.isTrue)
+      .fetch(tb.BOOK_ID)
+
   override fun existsById(thumbnailId: String): Boolean = dslRO.fetchExists(tb, tb.ID.eq(thumbnailId))
 
   override fun insert(thumbnail: ThumbnailBook) {
@@ -96,6 +104,7 @@ class ThumbnailBookDao(
       .set(tb.WIDTH, thumbnail.dimension.width)
       .set(tb.HEIGHT, thumbnail.dimension.height)
       .set(tb.FILE_SIZE, thumbnail.fileSize)
+      .set(tb.MANUAL_CROP, thumbnail.manualCrop)
       .execute()
   }
 
@@ -111,6 +120,7 @@ class ThumbnailBookDao(
       .set(tb.WIDTH, thumbnail.dimension.width)
       .set(tb.HEIGHT, thumbnail.dimension.height)
       .set(tb.FILE_SIZE, thumbnail.fileSize)
+      .set(tb.MANUAL_CROP, thumbnail.manualCrop)
       .where(tb.ID.eq(thumbnail.id))
       .execute()
   }
@@ -167,6 +177,7 @@ class ThumbnailBookDao(
       mediaType = mediaType,
       fileSize = fileSize,
       dimension = Dimension(width, height),
+      manualCrop = manualCrop,
       id = id,
       bookId = bookId,
       createdDate = createdDate,

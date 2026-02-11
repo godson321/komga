@@ -1,11 +1,10 @@
 <template>
-  <div v-if="leftBook">
-    <v-dialog v-model="modal"
-              scrollable
-    >
-      <v-card>
-        <v-card-title v-if="!rightBook">{{ $t('dialog.transient_book_details.title') }}</v-card-title>
-        <v-card-title v-else>{{ $t('dialog.transient_book_details.title_comparison') }}</v-card-title>
+  <v-dialog v-model="modal"
+            scrollable
+  >
+    <v-card v-if="leftBook">
+      <v-card-title v-if="!rightBook">{{ $t('dialog.transient_book_details.title') }}</v-card-title>
+      <v-card-title v-else>{{ $t('dialog.transient_book_details.title_comparison') }}</v-card-title>
         <v-btn icon absolute top right @click="dialogClose">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -60,9 +59,8 @@
           </v-container>
         </v-card-text>
 
-      </v-card>
-    </v-dialog>
-  </div>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">

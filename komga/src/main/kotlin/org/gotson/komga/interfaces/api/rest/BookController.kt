@@ -58,6 +58,8 @@ import org.gotson.komga.interfaces.api.rest.dto.PageDto
 import org.gotson.komga.interfaces.api.rest.dto.R2Positions
 import org.gotson.komga.interfaces.api.rest.dto.ReadListDto
 import org.gotson.komga.interfaces.api.rest.dto.ReadProgressUpdateDto
+import org.gotson.komga.interfaces.api.rest.dto.ThumbnailBatchCropDto
+import org.gotson.komga.interfaces.api.rest.dto.ThumbnailBatchRestoreDto
 import org.gotson.komga.interfaces.api.rest.dto.ThumbnailBookDto
 import org.gotson.komga.interfaces.api.rest.dto.patch
 import org.gotson.komga.interfaces.api.rest.dto.restrictUrl
@@ -772,7 +774,7 @@ class BookController(
     @RequestParam(name = "keep_left", required = false) keepLeft: Boolean = true,
   ) {
     bookRepository.findByIdOrNull(bookId)?.let {
-      taskEmitter.cropBookThumbnail(bookId, keepLeft, HIGH_PRIORITY)
+      taskEmitter.cropBookThumbnail(bookId, keepLeft, manualCrop = true, priority = HIGH_PRIORITY)
     } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
   }
 
@@ -806,7 +808,7 @@ class BookController(
   ) {
     val bookIds = bookRepository.findAllIdsBySeriesId(seriesId)
     if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
-    bookIds.forEach { taskEmitter.cropBookThumbnail(it, keepLeft, HIGH_PRIORITY) }
+    bookIds.forEach { taskEmitter.cropBookThumbnail(it, keepLeft, manualCrop = true, priority = HIGH_PRIORITY) }
   }
 
   @Operation(summary = "Restore all book posters in a series", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
@@ -819,5 +821,59 @@ class BookController(
     val bookIds = bookRepository.findAllIdsBySeriesId(seriesId)
     if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
     bookIds.forEach { taskEmitter.restoreBookThumbnail(it, HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Crop all book posters in a library", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PutMapping("api/v1/books/thumbnails/crop-library/{libraryId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun cropLibraryBookThumbnails(
+    @PathVariable libraryId: String,
+    @RequestParam(name = "keep_left", required = false) keepLeft: Boolean = true,
+  ) {
+    val bookIds = bookRepository.findAllIdsByLibraryId(libraryId)
+    if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    bookIds.forEach { taskEmitter.cropBookThumbnail(it, keepLeft, manualCrop = true, priority = HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Restore all book posters in a library", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/restore-library/{libraryId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun restoreLibraryBookThumbnails(
+    @PathVariable libraryId: String,
+  ) {
+    val bookIds = bookRepository.findAllIdsByLibraryId(libraryId)
+    if (bookIds.isEmpty()) throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    bookIds.forEach { taskEmitter.restoreBookThumbnail(it, HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Batch crop book posters by book IDs", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/crop-batch")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun cropBatchBookThumbnails(
+    @RequestBody request: ThumbnailBatchCropDto,
+  ) {
+    request.bookIds.forEach { taskEmitter.cropBookThumbnail(it, request.keepLeft, manualCrop = request.manualCrop, priority = HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Batch restore book posters by book IDs", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/restore-batch")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun restoreBatchBookThumbnails(
+    @RequestBody request: ThumbnailBatchRestoreDto,
+  ) {
+    request.bookIds.forEach { taskEmitter.restoreBookThumbnail(it, HIGH_PRIORITY) }
+  }
+
+  @Operation(summary = "Restore all book posters", tags = [OpenApiConfiguration.TagNames.BOOK_POSTER])
+  @PostMapping("api/v1/books/thumbnails/restore-all")
+  @PreAuthorize("hasRole('ADMIN')")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  fun restoreAllBookThumbnails() {
+    val bookIds = bookRepository.findAll(SearchCondition.Deleted(SearchOperator.IsFalse), SearchContext.empty(), Pageable.unpaged()).content.map { it.id }
+    bookIds.forEach { taskEmitter.restoreBookThumbnail(it, LOWEST_PRIORITY) }
   }
 }
